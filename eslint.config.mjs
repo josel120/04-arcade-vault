@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Maqueta de referencia: React UMD por CDN, no es código de la app.
+    "references/**",
   ]),
 ]);
 
