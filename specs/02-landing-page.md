@@ -1,6 +1,6 @@
 # SPEC 02 — Landing page y reorganización de rutas
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** SPEC 01
 > **Fecha:** 2026-08-19
 > **Objetivo:** Portar la landing de `references/home-about/home.jsx` a la raíz `/` y mover la Biblioteca actual a `/games`, dejando la nav con tres enlaces.
@@ -32,6 +32,7 @@ La página **Acerca de** de `references/home-about/about.jsx` queda explícitame
 - Hook `useReveal` con `IntersectionObserver` para la animación de entrada por scroll.
 - Ocho siluetas pixel SVG flotantes en el hero y cuatro iconos pixel SVG en las tarjetas de características, portados como componentes.
 - Ajustes al bloque `prefers-reduced-motion` de `app/globals.css` para que `.reveal` y `.tick-row` no se queden invisibles.
+- **CSS nuevo, no portado** (añadido durante la implementación; ver §6): `.hero-eyebrow .blink`, los estilos de `.tp-bar` / `.tp-fill`, `min-width: 0` en `.activity-card` y el reposicionamiento de `.hero-scroll`.
 
 **Fuera de alcance (para specs futuras):**
 
@@ -118,6 +119,8 @@ Cada paso deja el proyecto compilando y navegable.
 
 2. **CSS de la landing.** Añadir al final de `app/globals.css` los tres bloques de `references/home-about/styles.css`: `HOME PAGE` (930–1069), `ACTIVITY` (1621–1670) y `PRICING` (1672–1725), incluidos sus `@keyframes` (`float`, `bounce`, `tickin`) y sus `@media`. Añadir al bloque `prefers-reduced-motion` existente las reglas `.reveal { opacity: 1; transform: none; }` y `.tick-row { opacity: 1; }`. Verificación: `npm run build` pasa y no hay clases duplicadas con las ya presentes.
 
+   > **Al implementar:** los tres bloques se insertaron **antes** de `/* ===== accessibility floor ===== */`, no al final del archivo, para que las reglas de movimiento reducido sigan ganando por orden de fuente. Se contrastaron los 64 selectores y los 4 `@keyframes` contra `app/globals.css`: cero colisiones. A este bloque portado se le sumaron después cuatro reglas **nuevas**, decididas durante los pasos 6, 8 y 12 y justificadas en §6: `.hero-eyebrow .blink`, `.tp-bar` / `.tp-fill` (con sus variantes de podio), `min-width: 0` en `.activity-card` y `bottom: 24px` en `.hero-scroll`.
+
 3. **Datos.** Crear `lib/landing.ts` con los tipos y las seis constantes. Verificación: `npx tsc --noEmit` pasa.
 
 4. **Hook de scroll.** Crear `components/use-reveal.ts`: hook cliente que en `useEffect` observa todos los `.reveal` con `IntersectionObserver` (`threshold: 0.12`), les añade `in` al entrar y deja de observarlos, y devuelve `io.disconnect()` en la limpieza. Si `matchMedia("(prefers-reduced-motion: reduce)")` está activo, añade `in` a todos de golpe sin observar nada.
@@ -136,62 +139,68 @@ Cada paso deja el proyecto compilando y navegable.
 
 11. **Enlaces de vuelta.** Cambiar a `/` los destinos de `components/game-detail.tsx` (`VOLVER AL VAULT`), `components/game-player.tsx` (`VOLVER AL VAULT`), `components/hall-of-fame.tsx` (botón de vuelta), `app/not-found.tsx` (botón de vuelta) y los dos `router.push("/")` de `components/auth-form.tsx`. Los textos no cambian. Verificación: `grep -rn 'href="/"' components/ app/` devuelve solo destinos intencionados.
 
+    > **Al implementar: cero cambios de destino.** Los seis sitios ya apuntaban a `/`, así que al convertirse `/` en la landing (paso 6) pasaron a llevar donde debían sin editar una línea. Este paso previó un trabajo que se disolvió al elegir la landing como destino en lugar de `/games`.
+    >
+    > **Lo que sí hubo fueron cambios de texto**, no contemplados aquí: dos botones decían `VOLVER A LA BIBLIOTECA` (en `app/not-found.tsx` y en `components/hall-of-fame.tsx`) y pasaron a `VOLVER AL INICIO`, porque prometían la Biblioteca y entregaban la landing, y porque "Biblioteca" dejó de ser el nombre de ninguna sección. La frase del 404 pasó de "vuelve a la Biblioteca" a "vuelve al inicio". El texto `VOLVER AL VAULT` del detalle y del reproductor **no** se tocó, como manda el alcance: sigue siendo cierto.
+
 12. **Repaso.** Recorrer `/`, `/games`, `/juego/caida`, `/jugar/caida`, `/auth` y `/salon` comparando la landing contra `references/home-about/arcade-vault-standalone.html` abierto al lado, en escritorio y a 375 px.
 
 ---
 
 ## 5 — Criterios de aceptación
 
+Verificados en el paso 12 con Playwright sobre `next dev`, en 1440×900 y 375×812.
+
 **Compilación**
 
-- [ ] `npm run build` termina sin errores de tipos ni de compilación.
-- [ ] `npm run lint` termina sin errores.
-- [ ] La consola del navegador no muestra errores ni avisos de hidratación en `/` ni en `/games`.
+- [x] `npm run build` termina sin errores de tipos ni de compilación.
+- [x] `npm run lint` termina sin errores.
+- [x] La consola del navegador no muestra errores ni avisos de hidratación en `/` ni en `/games`.
 
 **Rutas**
 
-- [ ] `/` muestra la landing, no la Biblioteca.
-- [ ] `/games` muestra la Biblioteca con sus 8 tarjetas, buscador y chips, exactamente igual que antes.
-- [ ] `/juego/[id]`, `/jugar/[id]`, `/auth` y `/salon` siguen funcionando sin cambios visibles.
-- [ ] No queda ningún enlace en la app apuntando a `/` con la intención de llegar a la Biblioteca.
+- [x] `/` muestra la landing, no la Biblioteca.
+- [x] `/games` muestra la Biblioteca con sus 8 tarjetas, buscador y chips, exactamente igual que antes.
+- [x] `/juego/[id]`, `/jugar/[id]`, `/auth` y `/salon` siguen funcionando sin cambios visibles.
+- [x] No queda ningún enlace en la app apuntando a `/` con la intención de llegar a la Biblioteca.
 
 **Nav**
 
-- [ ] La barra muestra tres enlaces: `Inicio`, `Juegos` y `Salón de la Fama`. No aparece `Acerca de`.
-- [ ] En `/` se marca en cian `Inicio`; en `/games`, `/juego/caida` y `/jugar/caida` se marca `Juegos`; en `/salon` se marca `Salón de la Fama`.
-- [ ] Pulsar el logo desde cualquier ruta lleva a `/`.
-- [ ] Por debajo de 840 px el panel lateral muestra los mismos tres enlaces más el de sesión.
+- [x] La barra muestra tres enlaces: `Inicio`, `Juegos` y `Salón de la Fama`. No aparece `Acerca de`.
+- [x] En `/` se marca en cian `Inicio`; en `/games`, `/juego/caida` y `/jugar/caida` se marca `Juegos`; en `/salon` se marca `Salón de la Fama`.
+- [x] Pulsar el logo desde cualquier ruta lleva a `/`.
+- [x] Por debajo de 840 px el panel lateral muestra los mismos tres enlaces más el de sesión.
 
 **Landing — hero**
 
-- [ ] El hero ocupa la altura de la ventana menos la nav y muestra las ocho siluetas pixel flotando con su color y su retardo propios.
-- [ ] El título aparece en tres líneas: `EL ARCADE` en blanco, `CLÁSICO ESTÁ` y `DE VUELTA` con sus colores neón.
-- [ ] `▶ EXPLORAR JUEGOS` navega a `/games` y `✦ CREAR CUENTA` navega a `/auth`.
-- [ ] El eyebrow `▸ INSERTA UNA MONEDA` termina con el guion bajo parpadeante.
+- [x] El hero ocupa la altura de la ventana menos la nav y muestra las ocho siluetas pixel flotando con su color y su retardo propios.
+- [x] El título aparece en tres líneas: `EL ARCADE` en blanco, `CLÁSICO ESTÁ` y `DE VUELTA` con sus colores neón.
+- [x] `▶ EXPLORAR JUEGOS` navega a `/games` y `✦ CREAR CUENTA` navega a `/auth`.
+- [x] El eyebrow `▸ INSERTA UNA MONEDA` termina con el guion bajo parpadeante. — Requirió la regla nueva `.hero-eyebrow .blink`; con el CSS solo portado el guion salía estático.
 
 **Landing — secciones**
 
-- [ ] Las cuatro tarjetas de `// 01` muestran su icono pixel con el brillo de su color (cian, amarillo, magenta, verde).
-- [ ] `// 02` muestra exactamente 6 mini-tarjetas con la portada CSS del juego; pulsar una navega a `/juego/[id]`.
-- [ ] `VER TODOS LOS JUEGOS →` navega a `/games`.
-- [ ] La franja de estadísticas muestra `12+ JUEGOS`, `MILES DE PARTIDAS` y `GLOBAL RANKING`.
-- [ ] El ticker de `// 03` muestra las 7 filas con las puntuaciones formateadas con separador de miles y su tiempo relativo.
-- [ ] El top 5 muestra las barras decrecientes y los tres primeros en oro, plata y bronce.
-- [ ] `VER SALÓN →` navega a `/salon`.
-- [ ] `// 04` muestra `$0 / SIEMPRE`, las 6 ventajas, el sello `FREE PLAY` girado y las 3 preguntas frecuentes con su borde izquierdo de color distinto.
-- [ ] `EMPEZAR GRATIS →` navega a `/auth` e `INSERTAR MONEDA →` navega a `/games`.
+- [x] Las cuatro tarjetas de `// 01` muestran su icono pixel con el brillo de su color (cian, amarillo, magenta, verde).
+- [x] `// 02` muestra exactamente 6 mini-tarjetas con la portada CSS del juego; pulsar una navega a `/juego/[id]`.
+- [x] `VER TODOS LOS JUEGOS →` navega a `/games`.
+- [x] La franja de estadísticas muestra `12+ JUEGOS`, `MILES DE PARTIDAS` y `GLOBAL RANKING`.
+- [x] El ticker de `// 03` muestra las 7 filas con las puntuaciones formateadas con separador de miles y su tiempo relativo. — En escritorio. **A 375 px solo se ven 3 de las 7**: el `max-height: 360px` de `.ticker` recorta el contenido, que apilado mide 719 px. Es comportamiento del template (un feed deliberadamente recortado) y se deja como está.
+- [x] El top 5 muestra las barras decrecientes y los tres primeros en oro, plata y bronce. — Requirió estilar `.tp-bar` y `.tp-fill`, que el template dejaba sin reglas.
+- [x] `VER SALÓN →` navega a `/salon`.
+- [x] `// 04` muestra `$0 / SIEMPRE`, las 6 ventajas, el sello `FREE PLAY` girado y las 3 preguntas frecuentes con su borde izquierdo de color distinto.
+- [x] `EMPEZAR GRATIS →` navega a `/auth` e `INSERTAR MONEDA →` navega a `/games`.
 
 **Animación**
 
-- [ ] Al cargar `/`, las secciones bajo el pliegue están ocultas y aparecen al entrar en pantalla al hacer scroll.
-- [ ] Con `prefers-reduced-motion: reduce` activo, todas las secciones y las filas del ticker son visibles desde el primer render.
-- [ ] Salir de `/` no deja el `IntersectionObserver` conectado.
+- [x] Al cargar `/`, las secciones bajo el pliegue están ocultas y aparecen al entrar en pantalla al hacer scroll. — Las 6 secciones `.reveal` reciben `in` al hacer scroll.
+- [x] Con `prefers-reduced-motion: reduce` activo, todas las secciones y las filas del ticker son visibles desde el primer render.
+- [x] Salir de `/` no deja el `IntersectionObserver` conectado.
 
 **Responsive**
 
-- [ ] A 375 px de ancho no hay scroll horizontal en ninguna sección de la landing.
-- [ ] La rejilla de características pasa a 2 columnas por debajo de 980 px y a 1 por debajo de 520 px.
-- [ ] La rejilla de precios y la de actividad pasan a una columna por debajo de 900 px.
+- [ ] A 375 px de ancho no hay scroll horizontal en ninguna sección de la landing. — **No se cumple, por causa ajena a este spec.** El desbordamiento propio de la landing (`.activity-card`, 340 px sobre una pista de 296) se corrigió con `min-width: 0`. El que queda lo produce el botón `≡` de la nav: logo (119) + botón de sesión (123) + hamburguesa (57) no caben en 360 px. Es deuda del SPEC 01 — se reproduce igual en `/games`, que este spec no toca — y a esa anchura la nav ya oculta `.links`, así que el tercer enlace añadido aquí no influye. Merece su propia spec para arreglarse en todas las rutas a la vez.
+- [x] La rejilla de características pasa a 2 columnas por debajo de 980 px y a 1 por debajo de 520 px.
+- [x] La rejilla de precios y la de actividad pasan a una columna por debajo de 900 px.
 
 ---
 
@@ -217,6 +226,20 @@ Cada paso deja el proyecto compilando y navegable.
 - **No:** portar el bloque `.gp*` del gamepad. Ocupa 470 líneas de CSS y ni la landing ni la página Acerca de lo usan.
 - **No:** añadir ya el enlace `Acerca de` a la nav apuntando a una ruta inexistente. Un enlace de la barra principal que cae en el 404 es peor que no tenerlo.
 
+### Decisiones tomadas durante la implementación
+
+El spec daba por hecho que bastaba con portar el CSS de la referencia. No bastó: el template arrastra cuatro defectos latentes que solo se ven al montarlo. Cada uno se resolvió con una regla nueva, acotada, y sin tocar nada del SPEC 01.
+
+- **Sí:** regla nueva `.hero-eyebrow .blink`. La única `.blink` del proyecto está acotada a `.av-hero .sub`, así que en la landing el guion no parpadeaba. En la referencia original tampoco lo hace. Se acota al eyebrow y reutiliza el `@keyframes blink` existente.
+- **No:** desacotar `.blink` a regla global. Habría tocado una regla que la pantalla de juegos ya usa, fuera del alcance de este spec.
+- **Sí:** estilar `.tp-bar` y `.tp-fill`. El template deja `.tp-bar` como absoluto de tamaño cero y `.tp-fill` sin ninguna regla, así que el `width: 100 - i*16 %` que calcula no pintaba nada: la única "barra" era un `::before` del mismo ancho en las cinco filas. Se le devuelve su columna del grid, con el relleno en oro, plata y bronce para los tres primeros.
+- **No:** borrar el marcado muerto `.tp-bar` / `.tp-fill` y corregir el criterio. Se prefirió cumplir el criterio tal como estaba escrito.
+- **Sí:** `min-width: 0` en `.activity-card`. Como item de grid con `min-width: auto`, el `white-space: nowrap` de `.ac-title` (310 px) la estiraba a 340 px sobre una pista de 296 y desbordaba la pantalla a 375 px. Con esto, el `text-overflow: ellipsis` que ya traía por fin se aplica.
+- **Sí:** sacar `.hero-scroll` de `.home-hero-inner` y pasar su `bottom: -20px` a `24px`. Anclado al bloque interior, el indicador `DESLIZA ▼` se montaba 15 px sobre los botones del hero. Ahora se apoya en el pie de la sección a pantalla completa, que es donde se espera.
+- **No:** arreglar el desbordamiento del botón `≡` de la nav a 375 px. Es previo a este spec y afecta a las cinco pantallas del SPEC 01; tocarlo aquí significaría modificar la nav de rutas ya validadas por un problema que este spec no introdujo.
+- **Sí:** actualizar a `VOLVER AL INICIO` los dos botones que decían `VOLVER A LA BIBLIOTECA`. Prometían una sección que ya no se llama así y llevaban a otro sitio.
+- **Nota:** los `transitionDelay` escalonados de `.feature-card` (80 ms) y `.stat-block` (90 ms) que pide el plan **no producen entrada escalonada**. `.feature-card` solo transiciona el hover y `.stat-block` no tiene ninguna `transition`; la entrada la hace la sección entera vía `.reveal`. Se conservan por fidelidad a la referencia. El único escalonado real es el del ticker, que sí usa `animation`.
+
 ---
 
 ## 7 — Riesgos identificados
@@ -229,6 +252,7 @@ Cada paso deja el proyecto compilando y navegable.
 | El hero a `100vh` se corta en navegadores móviles con barra dinámica     | Se conserva el `calc(100vh - 60px)` de la referencia y se revisa a 375 px en el paso 12.                                                                  |
 | `GAMES.slice(0, 6)` se rompe si en el futuro hay menos de 6 juegos       | `slice` devuelve lo que haya sin error; la rejilla simplemente muestra menos tarjetas.                                                                    |
 | Los tipos de props de ruta de Next 16 en `app/games/page.tsx`            | La ruta no tiene parámetros dinámicos, pero antes de escribirla se lee la documentación en `node_modules/next/dist/docs/01-app/`, como exige `AGENTS.md`. |
+| **Materializado:** el CSS del template arrastra defectos que solo se ven al montarlo | Aparecieron cuatro (parpadeo, barras del top 5, desbordamiento de `.activity-card`, solape de `DESLIZA`). Los cuatro se corrigieron con reglas nuevas acotadas; ver §6. El riesgo estaba mal enunciado: se temían colisiones con el CSS existente, y el problema real fue el CSS portado que no hacía lo que aparentaba. |
 
 ---
 

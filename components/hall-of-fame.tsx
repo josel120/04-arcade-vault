@@ -167,7 +167,7 @@ export function HallOfFame() {
 
       <div style={{ textAlign: "center", marginTop: 32 }}>
         <Link className="btn lg" href="/">
-          VOLVER A LA BIBLIOTECA
+          VOLVER AL INICIO
         </Link>
       </div>
     </div>

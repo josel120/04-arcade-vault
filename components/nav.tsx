@@ -11,9 +11,10 @@ export function Nav() {
   const { user, signOut } = useSession();
   const [open, setOpen] = useState(false);
 
-  // La Biblioteca queda activa también en el detalle y en el reproductor.
-  const libraryActive =
-    pathname === "/" ||
+  const homeActive = pathname === "/";
+  // Juegos queda activo también en el detalle y en el reproductor.
+  const gamesActive =
+    pathname === "/games" ||
     pathname.startsWith("/juego") ||
     pathname.startsWith("/jugar");
   const salonActive = pathname === "/salon";
@@ -31,8 +32,11 @@ export function Nav() {
           </div>
         </Link>
         <div className="links">
-          <Link className={libraryActive ? "active" : ""} href="/">
-            Biblioteca
+          <Link className={homeActive ? "active" : ""} href="/">
+            Inicio
+          </Link>
+          <Link className={gamesActive ? "active" : ""} href="/games">
+            Juegos
           </Link>
           <Link className={salonActive ? "active" : ""} href="/salon">
             Salón de la Fama
@@ -71,12 +75,15 @@ export function Nav() {
         <div className="pixel neon-cyan" style={{ fontSize: 11, marginBottom: 16 }}>
           MENÚ
         </div>
+        <Link className={homeActive ? "active" : ""} href="/" onClick={close}>
+          Inicio
+        </Link>
         <Link
-          className={libraryActive ? "active" : ""}
-          href="/"
+          className={gamesActive ? "active" : ""}
+          href="/games"
           onClick={close}
         >
-          Biblioteca
+          Juegos
         </Link>
         <Link
           className={salonActive ? "active" : ""}
