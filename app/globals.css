@@ -974,6 +974,46 @@ a { color: inherit; text-decoration: none; }
 }
 @keyframes spinpix { to { transform: rotate(360deg); } }
 
+/* ===== 404 ===== */
+.av-404 {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 96px 32px;
+  text-align: center;
+}
+.av-404 h1 {
+  margin: 0;
+  font-family: var(--pixel);
+  font-size: clamp(20px, 5vw, 40px);
+  letter-spacing: 0.1em;
+  line-height: 1.35;
+  color: var(--magenta);
+  text-shadow: 0 0 14px rgba(255, 0, 110, 0.7);
+}
+.av-404 h1 .code { color: var(--yellow); text-shadow: 0 0 14px rgba(245, 255, 0, 0.6); }
+.av-404 .plate {
+  display: inline-block;
+  margin-top: 28px;
+  padding: 10px 16px;
+  border: 1px dashed var(--line-2);
+  font-family: var(--pixel);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--ink-faint);
+}
+.av-404 p {
+  margin: 22px auto 0;
+  max-width: 46ch;
+  color: var(--ink-dim);
+}
+.av-404 .actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+
 /* ===== accessibility floor ===== */
 :focus-visible {
   outline: 2px solid var(--cyan);
