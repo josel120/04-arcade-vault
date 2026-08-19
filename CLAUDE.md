@@ -10,15 +10,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 The README states the project follows **Spec Driven Design**, driven by the `/spec` and `/spec-impl` skills from [Klerith/fernando-skills](https://github.com/Klerith/fernando-skills) (installed with `npx skills@latest add Klerith/fernando-skills`). Those skills are not installed in this checkout — if they are unavailable, say so rather than improvising a substitute spec workflow.
 
-## Commands
-
-```bash
-npm run dev     # dev server (also regenerates the AGENTS.md rules block)
-npm run build   # production build
-npm start       # serve the production build
-npm run lint    # eslint (flat config, eslint-config-next core-web-vitals + typescript)
-```
-
 Type checking has no dedicated script — `npm run build` type-checks, or run `npx tsc --noEmit`.
 
 There is no test framework configured. If tests are needed, ask which runner to add before wiring one up.
@@ -30,3 +21,7 @@ There is no test framework configured. If tests are needed, ask which runner to 
 - **Tailwind CSS v4**, configured entirely in CSS — no `tailwind.config.*`. Theme tokens live in the `@theme inline` block of `app/globals.css`; PostCSS wires it up via `@tailwindcss/postcss`.
 - Import alias `@/*` maps to the repo root.
 - `next dev` rewrites the `nextjs-agent-rules` block in `AGENTS.md`. If it shows up dirty in `git status`, commit it with your work rather than reverting it.
+
+## Skills
+
+usa siempre /frontend-design para diseñar la interfaz de usuario.
