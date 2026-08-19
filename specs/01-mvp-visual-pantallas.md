@@ -1,6 +1,6 @@
 # SPEC 01 — MVP visual: las cinco pantallas de Arcade Vault
 
-> **Estado:** Aprobado
+> **Estado:** Implementado
 > **Depende de:** —
 > **Fecha:** 2026-08-19
 > **Objetivo:** Portar las cinco pantallas de `references/templates/` a Next.js 16 con App Router como maqueta navegable, sin implementar ningún juego real.
@@ -165,57 +165,57 @@ Cada paso deja el proyecto compilando y navegable.
 
 **Compilación**
 
-- [ ] `npm run build` termina sin errores de tipos ni de compilación.
-- [ ] `npm run lint` termina sin errores.
-- [ ] La consola del navegador no muestra errores ni avisos de hidratación en ninguna de las cinco rutas.
+- [x] `npm run build` termina sin errores de tipos ni de compilación.
+- [x] `npm run lint` termina sin errores.
+- [x] La consola del navegador no muestra errores ni avisos de hidratación en ninguna de las cinco rutas.
 
 **Navegación**
 
-- [ ] `/`, `/juego/caida`, `/jugar/caida`, `/auth` y `/salon` cargan directamente por URL, sin pasar por la Biblioteca.
-- [ ] `/juego/no-existe` y `/jugar/no-existe` muestran la página 404 con estética arcade, no una pantalla en blanco.
-- [ ] La nav marca en cian el enlace activo: Biblioteca en `/`, `/juego/*` y `/jugar/*`; Salón de la Fama en `/salon`.
-- [ ] Por debajo de 840 px de ancho, los enlaces de la nav se ocultan y el botón `≡` abre el panel lateral.
+- [x] `/`, `/juego/caida`, `/jugar/caida`, `/auth` y `/salon` cargan directamente por URL, sin pasar por la Biblioteca.
+- [x] `/juego/no-existe` y `/jugar/no-existe` muestran la página 404 con estética arcade, no una pantalla en blanco.
+- [x] La nav marca en cian el enlace activo: Biblioteca en `/`, `/juego/*` y `/jugar/*`; Salón de la Fama en `/salon`.
+- [x] Por debajo de 840 px de ancho, los enlaces de la nav se ocultan y el botón `≡` abre el panel lateral.
 
 **Biblioteca**
 
-- [ ] Se muestran las 8 tarjetas con su portada CSS, categoría, descripción corta y mejor puntuación formateada.
-- [ ] Escribir `serp` en el buscador deja una sola tarjeta visible.
-- [ ] Pulsar el chip `PUZZLE` deja solo CAÍDA.
-- [ ] Una búsqueda sin resultados muestra `NO HAY RESULTADOS`.
-- [ ] Pasar el ratón sobre una tarjeta la inclina en 3D y devolverla a su sitio al salir.
-- [ ] Pulsar una tarjeta o su botón JUGAR navega a `/juego/[id]`.
+- [x] Se muestran las 8 tarjetas con su portada CSS, categoría, descripción corta y mejor puntuación formateada.
+- [x] Escribir `serp` en el buscador deja una sola tarjeta visible.
+- [x] Pulsar el chip `PUZZLE` deja solo CAÍDA.
+- [x] Una búsqueda sin resultados muestra `NO HAY RESULTADOS`.
+- [x] Pasar el ratón sobre una tarjeta la inclina en 3D y devolverla a su sitio al salir.
+- [x] Pulsar una tarjeta o su botón JUGAR navega a `/juego/[id]`.
 
 **Detalle**
 
-- [ ] Se muestran portada, las cuatro etiquetas, descripción larga y las tres estadísticas (Partidas, Mejor global, Dificultad).
-- [ ] El leaderboard lateral muestra 10 filas con los tres primeros puestos en oro, plata y bronce.
-- [ ] `▶ JUGAR AHORA` navega a `/jugar/[id]`; `VOLVER AL VAULT` navega a `/`.
+- [x] Se muestran portada, las cuatro etiquetas, descripción larga y las tres estadísticas (Partidas, Mejor global, Dificultad).
+- [x] El leaderboard lateral muestra 10 filas con los tres primeros puestos en oro, plata y bronce.
+- [x] `▶ JUGAR AHORA` navega a `/jugar/[id]`; `VOLVER AL VAULT` navega a `/`.
 
 **Reproductor**
 
-- [ ] El HUD muestra el nombre del jugador con sesión, o `INVITADO` si no hay sesión.
-- [ ] La puntuación sube sola de forma continua mientras la partida está activa.
-- [ ] `PAUSA` detiene el contador y superpone `EN PAUSA`; `REANUDAR` lo reactiva.
-- [ ] `FIN` abre el modal con la puntuación final formateada.
-- [ ] Guardar la puntuación reemplaza el formulario por `▸ PUNTUACIÓN GUARDADA_` y añade una entrada a `av_scores`.
-- [ ] `JUGAR DE NUEVO` reinicia puntuación a 0, vidas a 3 y nivel a 01.
-- [ ] Salir de `/jugar/[id]` detiene el intervalo (no quedan avisos de actualización sobre componente desmontado).
+- [x] El HUD muestra el nombre del jugador con sesión, o `INVITADO` si no hay sesión.
+- [x] La puntuación sube sola de forma continua mientras la partida está activa.
+- [x] `PAUSA` detiene el contador y superpone `EN PAUSA`; `REANUDAR` lo reactiva.
+- [x] `FIN` abre el modal con la puntuación final formateada.
+- [x] Guardar la puntuación reemplaza el formulario por `▸ PUNTUACIÓN GUARDADA_` y añade una entrada a `av_scores`.
+- [x] `JUGAR DE NUEVO` reinicia puntuación a 0, vidas a 3 y nivel a 01.
+- [x] Salir de `/jugar/[id]` detiene el intervalo (no quedan avisos de actualización sobre componente desmontado).
 
 **Acceso**
 
-- [ ] Las pestañas alternan entre iniciar sesión y crear cuenta; el campo de correo solo aparece en crear cuenta.
-- [ ] Enviar el formulario guarda el nombre en mayúsculas y con 10 caracteres como máximo, y navega a `/`.
-- [ ] `JUGAR COMO INVITADO` inicia sesión como `INVITADO` y navega a `/`.
-- [ ] Con sesión iniciada, la nav muestra el nombre del jugador; pulsarlo cierra la sesión y vuelve a mostrar `Iniciar Sesión`.
-- [ ] Recargar la página conserva la sesión.
+- [x] Las pestañas alternan entre iniciar sesión y crear cuenta; el campo de correo solo aparece en crear cuenta.
+- [x] Enviar el formulario guarda el nombre en mayúsculas y con 10 caracteres como máximo, y navega a `/`.
+- [x] `JUGAR COMO INVITADO` inicia sesión como `INVITADO` y navega a `/`.
+- [x] Con sesión iniciada, la nav muestra el nombre del jugador; pulsarlo cierra la sesión y vuelve a mostrar `Iniciar Sesión`.
+- [x] Recargar la página conserva la sesión.
 
 **Salón de la Fama**
 
-- [ ] Las pestañas listan los 8 juegos y cambian el podio y la tabla.
-- [ ] El podio muestra los puestos 01, 02 y 03 con sus bordes en oro, plata y bronce.
-- [ ] La tabla muestra 12 filas con la animación de entrada escalonada.
-- [ ] Con sesión, aparece la fila `▸ TU MEJOR MARCA` destacada en amarillo.
-- [ ] Una puntuación guardada desde el reproductor aparece en la tabla de ese juego, en la posición que le corresponde por puntuación.
+- [x] Las pestañas listan los 8 juegos y cambian el podio y la tabla.
+- [x] El podio muestra los puestos 01, 02 y 03 con sus bordes en oro, plata y bronce.
+- [x] La tabla muestra 12 filas con la animación de entrada escalonada.
+- [x] Con sesión, aparece la fila `▸ TU MEJOR MARCA` destacada en amarillo.
+- [x] Una puntuación guardada desde el reproductor aparece en la tabla de ese juego, en la posición que le corresponde por puntuación.
 
 ---
 
