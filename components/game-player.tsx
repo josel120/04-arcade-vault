@@ -1,23 +1,38 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useSession } from "@/components/session-provider";
 import type { Game } from "@/lib/games";
 
+/** Puntos por nivel: cada 2500 puntos sube el contador de nivel. */
+const POINTS_PER_LEVEL = 2500;
+
 export function GamePlayer({ game }: { game: Game }) {
   const { user } = useSession();
 
-  const [score] = useState(0);
+  const [score, setScore] = useState(0);
   const [lives] = useState(3);
-  const [level] = useState(1);
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
+
+  // El nivel se deriva de la puntuación: no necesita estado propio y se
+  // reinicia solo cuando la puntuación vuelve a 0.
+  const level = Math.floor(score / POINTS_PER_LEVEL) + 1;
 
   // El provider lee la sesión tras montar, así que el HUD la toma del contexto
   // en cada render en vez de congelarla en un estado inicial.
   const playerName = user ? user.name : "INVITADO";
+
+  useEffect(() => {
+    if (over || paused) return;
+    const timer = setInterval(() => {
+      setScore((value) => value + Math.floor(10 + Math.random() * 90));
+    }, 220);
+    // Se limpia al pausar, al terminar y al desmontar el componente.
+    return () => clearInterval(timer);
+  }, [over, paused]);
 
   return (
     <div className="av-player fade-in">
