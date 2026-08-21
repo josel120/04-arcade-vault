@@ -6,14 +6,7 @@ import { MiniCard } from "@/components/mini-card";
 import { FeatureIcon, FloatingSilhouettes } from "@/components/pixel-art";
 import { useReveal } from "@/components/use-reveal";
 import { GAMES } from "@/lib/games";
-import {
-  FAQ,
-  FEATURES,
-  PRICE_PERKS,
-  STATS,
-  TICKER,
-  TOP_PLAYERS,
-} from "@/lib/landing";
+import { FAQ, FEATURES, PRICE_PERKS, STATS, TICKER, TOP_PLAYERS } from "@/lib/landing";
 
 /** Oro, plata y bronce para los tres primeros puestos del top de la landing. */
 function podiumClass(index: number): string {
@@ -56,7 +49,6 @@ export function Landing() {
               ✦ CREAR CUENTA
             </Link>
           </div>
-
         </div>
 
         {/* Fuera de `.home-hero-inner` a propósito: se ancla al pie de la
@@ -115,11 +107,7 @@ export function Landing() {
       <section className="home-stats reveal">
         <div className="stats-inner">
           {STATS.map((stat, index) => (
-            <div
-              key={stat.u}
-              className="stat-block"
-              style={{ transitionDelay: `${index * 90}ms` }}
-            >
+            <div key={stat.u} className="stat-block" style={{ transitionDelay: `${index * 90}ms` }}>
               <div className="stat-n neon-yellow">{stat.n}</div>
               <div className="stat-u pixel">{stat.u}</div>
               <div className="stat-s">{stat.s}</div>
@@ -150,9 +138,7 @@ export function Landing() {
                 >
                   <span className={"tk-p neon-" + row.color}>{row.player}</span>
                   <span className="tk-mid">▸ {row.game}</span>
-                  <span className="tk-s">
-                    +{row.score.toLocaleString("es-ES")}
-                  </span>
+                  <span className="tk-s">+{row.score.toLocaleString("es-ES")}</span>
                   <span className="tk-t">{row.ago}</span>
                 </div>
               ))}
@@ -161,32 +147,20 @@ export function Landing() {
 
           <div className="activity-card">
             <div className="ac-head">
-              <div className="ac-title pixel neon-magenta">
-                ▸ TOP JUGADORES · HOY
-              </div>
+              <div className="ac-title pixel neon-magenta">▸ TOP JUGADORES · HOY</div>
               <Link className="lb-link" href="/salon">
                 VER SALÓN →
               </Link>
             </div>
             <div className="top-list">
               {TOP_PLAYERS.map((row, index) => (
-                <div
-                  key={row.player}
-                  className={"top-row" + podiumClass(index)}
-                >
-                  <span className="tp-rk">
-                    #{String(row.rank).padStart(2, "0")}
-                  </span>
+                <div key={row.player} className={"top-row" + podiumClass(index)}>
+                  <span className="tp-rk">#{String(row.rank).padStart(2, "0")}</span>
                   <span className="tp-bar">
-                    <span
-                      className="tp-fill"
-                      style={{ width: `${100 - index * 16}%` }}
-                    />
+                    <span className="tp-fill" style={{ width: `${100 - index * 16}%` }} />
                   </span>
                   <span className="tp-p">{row.player}</span>
-                  <span className="tp-s">
-                    {row.score.toLocaleString("es-ES")}
-                  </span>
+                  <span className="tp-s">{row.score.toLocaleString("es-ES")}</span>
                 </div>
               ))}
             </div>
@@ -246,9 +220,7 @@ export function Landing() {
         <Link className="btn xl pulse final-cta" href="/games">
           INSERTAR MONEDA →
         </Link>
-        <div className="final-tag">
-          Gratis. Sin registro obligatorio. Empieza en segundos.
-        </div>
+        <div className="final-tag">Gratis. Sin registro obligatorio. Empieza en segundos.</div>
       </section>
     </div>
   );

@@ -20,9 +20,7 @@ import {
  * de módulo: sin ellas la app tiene que compilar, arrancar y servir /about
  * con normalidad, y solo el envío falla.
  */
-export async function sendContactMessage(
-  input: ContactInput,
-): Promise<ContactResult> {
+export async function sendContactMessage(input: ContactInput): Promise<ContactResult> {
   if (validateContact(input) !== null) {
     return { ok: false, reason: "validation" };
   }

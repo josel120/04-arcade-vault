@@ -13,8 +13,8 @@ export default function NotFound() {
       </h1>
       <div className="plate">CARTUCHO NO ENCONTRADO</div>
       <p>
-        Esta dirección no apunta a ningún juego del Vault. Revisa la URL o
-        vuelve al inicio para elegir otro cartucho.
+        Esta dirección no apunta a ningún juego del Vault. Revisa la URL o vuelve al inicio para
+        elegir otro cartucho.
       </p>
       <div className="actions">
         <Link className="btn" href="/">

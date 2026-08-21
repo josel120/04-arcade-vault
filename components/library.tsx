@@ -12,9 +12,7 @@ export function Library() {
   const filtered = useMemo(() => {
     const needle = query.toLowerCase();
     return GAMES.filter(
-      (game) =>
-        (cat === "TODOS" || game.cat === cat) &&
-        game.title.toLowerCase().includes(needle),
+      (game) => (cat === "TODOS" || game.cat === cat) && game.title.toLowerCase().includes(needle),
     );
   }, [query, cat]);
 

@@ -55,15 +55,7 @@ export function FloatingSilhouettes() {
         <g fill="#00ff88">
           <rect x="10" y="0" width="4" height="24" />
           <rect x="0" y="10" width="24" height="4" />
-          <rect
-            x="6"
-            y="6"
-            width="12"
-            height="12"
-            fill="none"
-            stroke="#00ff88"
-            strokeWidth="2"
-          />
+          <rect x="6" y="6" width="12" height="12" fill="none" stroke="#00ff88" strokeWidth="2" />
         </g>
       </svg>
 
@@ -151,15 +143,7 @@ export function FeatureIcon({ kind }: { kind: FeatureKind }) {
     return (
       <svg className="ft-icon" viewBox="0 0 16 16">
         <g fill={C}>
-          <rect
-            x="3"
-            y="3"
-            width="10"
-            height="10"
-            fill="none"
-            stroke={C}
-            strokeWidth="1.5"
-          />
+          <rect x="3" y="3" width="10" height="10" fill="none" stroke={C} strokeWidth="1.5" />
           <rect x="5" y="6" width="1.5" height="4" />
           <rect x="5" y="6" width="4" height="1.5" />
           <rect x="5" y="8" width="3" height="1" />

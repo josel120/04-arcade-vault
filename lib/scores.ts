@@ -60,7 +60,5 @@ export function seededScores(seed: number, count = 12): ScoreRow[] {
     });
   }
 
-  return rows
-    .sort((a, b) => b.score - a.score)
-    .map((row, i) => ({ ...row, rank: i + 1 }));
+  return rows.sort((a, b) => b.score - a.score).map((row, i) => ({ ...row, rank: i + 1 }));
 }

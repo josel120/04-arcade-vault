@@ -72,9 +72,7 @@ export type Game = {
   plays: string; // "12.4K" — ya formateado
 };
 
-export const GAMES: Game[] = [
-  /* los 8 juegos de data.jsx, sin cambios */
-];
+export const GAMES: Game[] = [/* los 8 juegos de data.jsx, sin cambios */];
 export const CATS = ["TODOS", "ARCADE", "PUZZLE", "SHOOTER", "VERSUS"] as const;
 export function getGame(id: string): Game | undefined;
 ```
