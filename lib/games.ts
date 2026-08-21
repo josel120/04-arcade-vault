@@ -108,6 +108,17 @@ export const GAMES: Game[] = [
     best: 24,
     plays: "4.2K",
   },
+  {
+    id: "asteroides",
+    title: "ASTEROIDES",
+    short: "Rompe rocas a la deriva en un espacio sin bordes.",
+    long: "Tu nave flota en un campo de asteroides donde el espacio se dobla sobre sí mismo: sal por un borde y aparecerás por el opuesto. Dispara para partir las rocas grandes en medianas y las medianas en pequeñas, y recoge el módulo de disparo triple antes de que se apague.",
+    cat: "SHOOTER",
+    cover: "cover-asteroides",
+    color: "cyan",
+    best: 0,
+    plays: "0",
+  },
 ];
 
 export const CATS = ["TODOS", "ARCADE", "PUZZLE", "SHOOTER", "VERSUS"] as const;
@@ -116,4 +127,16 @@ export type Cat = (typeof CATS)[number];
 
 export function getGame(id: string): Game | undefined {
   return GAMES.find((game) => game.id === id);
+}
+
+/**
+ * Tope superior de una puntuación aceptable.
+ *
+ * Es un badén, no un candado: filtra lo absurdo, no lo verosímil. Tiene que
+ * coincidir con la restricción `scores_score_range` de `public.scores`.
+ */
+export const MAX_SCORE = 10_000_000;
+
+export function isKnownGame(id: string): boolean {
+  return GAMES.some((game) => game.id === id);
 }

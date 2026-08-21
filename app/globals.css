@@ -789,6 +789,47 @@ a {
   text-shadow: 0 0 8px var(--yellow);
 }
 
+/* ASTEROIDES — la portada es el espacio toroidal, que es lo único que este
+   juego tiene y ninguno más del catálogo: la trayectoria cruza el encuadre y
+   queda cortada por los dos bordes, así que se lee como un bucle y no como un
+   recorte. Las rocas son anillos huecos —el trazo vectorial real del juego— en
+   los tres tamaños que usa `RADII`, para no repetir las masas grises macizas
+   de `.cover-rocas`, que comparte con esta el filtro SHOOTER. */
+.cover-asteroides {
+  background:
+    radial-gradient(circle at 15% 18%, rgba(230, 233, 255, 0.9) 0 1px, transparent 2px),
+    radial-gradient(circle at 84% 12%, rgba(230, 233, 255, 0.7) 0 1px, transparent 2px),
+    radial-gradient(circle at 66% 86%, rgba(230, 233, 255, 0.8) 0 1px, transparent 2px),
+    radial-gradient(circle at 30% 92%, rgba(230, 233, 255, 0.55) 0 1px, transparent 2px),
+    radial-gradient(circle at 93% 62%, rgba(230, 233, 255, 0.7) 0 1px, transparent 2px),
+    radial-gradient(circle at 8% 54%, rgba(230, 233, 255, 0.5) 0 1px, transparent 2px),
+    radial-gradient(circle at 50% 45%, #0d0d2e 0%, #000 74%);
+}
+.cover-asteroides::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 24% 28%, transparent 0 21px, var(--cyan) 21px 23px, transparent 24px),
+    radial-gradient(circle at 73% 22%, transparent 0 13px, var(--cyan) 13px 15px, transparent 16px),
+    radial-gradient(circle at 44% 80%, transparent 0 9px, var(--cyan) 9px 11px, transparent 12px),
+    repeating-linear-gradient(90deg, var(--cyan) 0 7px, transparent 7px 16px) 0 52% / 100% 2px
+      no-repeat;
+  opacity: 0.75;
+  filter: drop-shadow(0 0 6px rgba(0, 245, 255, 0.55));
+}
+.cover-asteroides::before {
+  content: "▸";
+  position: absolute;
+  left: 78%;
+  top: 52%;
+  transform: translateY(-50%);
+  color: var(--cyan);
+  font-size: 26px;
+  line-height: 1;
+  text-shadow: 0 0 10px var(--cyan);
+}
+
 .cover-rana {
   background: linear-gradient(180deg, #001f2a, #0a0a18);
 }
@@ -2888,6 +2929,157 @@ a {
 .auth-error::before {
   content: "[ERROR] ";
   opacity: 0.7;
+}
+
+/* ===== juego real dentro del CRT (SPEC 05) ===== */
+
+/* El motor dibuja en 800x600 y el lienzo se estira al hueco de la pantalla,
+   que ya es 4/3: la proporción cuadra sin tocar una constante del juego. */
+.game-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #000;
+}
+
+/* Leyenda de teclas. Se lee como una segunda tira de chasis del monitor, no
+   como interfaz web: misma tipografía de píxel diminuta y mismo tracking que
+   .crt-bottom, del que cuelga. */
+.game-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+  justify-content: center;
+  margin-top: 16px;
+  padding: 0 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.game-keys .key-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.game-keys kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 7px;
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+  font-family: var(--pixel);
+  font-size: 8px;
+  line-height: 1;
+  color: var(--ink-dim);
+  /* La muesca del .btn a escala reducida: misma familia, más callada. */
+  clip-path: polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px);
+}
+
+/* Botonera táctil: repartida como un mueble recreativo, girar bajo un pulgar y
+   propulsar/disparar bajo el otro. */
+.game-touch {
+  display: none;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+}
+.game-touch .pad-cluster {
+  display: flex;
+  gap: 12px;
+}
+.game-touch .pad-key {
+  width: 72px;
+  height: 64px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  line-height: 1;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  color: var(--ink-dim);
+  cursor: pointer;
+  /* Sin esto, arrastrar el pulgar sobre el botón desplaza la página y
+     mantenerlo pulsado selecciona el glifo. */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+/* El relleno al pulsar no es adorno: propulsar es un control de mantener
+   apretado y el jugador necesita ver que sigue activo. */
+.game-touch .pad-key.cyan:active {
+  border-color: var(--cyan);
+  color: var(--bg);
+  background: var(--cyan);
+  box-shadow: 0 0 18px rgba(0, 245, 255, 0.5);
+}
+.game-touch .pad-key.yellow:active {
+  border-color: var(--yellow);
+  color: var(--bg);
+  background: var(--yellow);
+  box-shadow: 0 0 18px rgba(245, 255, 0, 0.5);
+}
+.game-touch .pad-key.magenta:active {
+  border-color: var(--magenta);
+  color: var(--bg);
+  background: var(--magenta);
+  box-shadow: 0 0 18px rgba(255, 0, 110, 0.5);
+}
+
+/* El puntero, no el ancho: alguien con el navegador estrecho en un portátil
+   sigue teniendo teclado, y un tablet ancho no lo tiene. */
+@media (pointer: coarse) {
+  .game-keys {
+    display: none;
+  }
+  .game-touch {
+    display: flex;
+  }
+}
+
+/* Modal de fin de partida: alias fijo de la cuenta y aviso al invitado. */
+.modal .save-as {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+.modal .save-as .l {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.modal .save-as .v {
+  font-family: var(--pixel);
+  font-size: 12px;
+  color: var(--cyan);
+  text-shadow: 0 0 8px rgba(0, 245, 255, 0.5);
+}
+.modal .guest-note {
+  margin: 4px 0 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--ink-dim);
+}
+.modal .guest-note a {
+  color: var(--cyan);
+  border-bottom: 1px solid rgba(0, 245, 255, 0.4);
+}
+.modal .guest-note a:hover {
+  text-shadow: 0 0 8px rgba(0, 245, 255, 0.6);
 }
 
 /* ===== accessibility floor ===== */
