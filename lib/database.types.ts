@@ -8,6 +8,45 @@ export type Database = {
   };
   public: {
     Tables: {
+      games: {
+        Row: {
+          cat: string;
+          color: string;
+          cover: string;
+          created_at: string;
+          id: string;
+          is_published: boolean;
+          long: string;
+          short: string;
+          sort_order: number;
+          title: string;
+        };
+        Insert: {
+          cat: string;
+          color: string;
+          cover: string;
+          created_at?: string;
+          id: string;
+          is_published?: boolean;
+          long: string;
+          short: string;
+          sort_order: number;
+          title: string;
+        };
+        Update: {
+          cat?: string;
+          color?: string;
+          cover?: string;
+          created_at?: string;
+          id?: string;
+          is_published?: boolean;
+          long?: string;
+          short?: string;
+          sort_order?: number;
+          title?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           created_at: string;
@@ -48,11 +87,59 @@ export type Database = {
           score?: number;
           user_id?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "scores_game_id_fkey";
+            columns: ["game_id"];
+            isOneToOne: false;
+            referencedRelation: "game_stats";
+            referencedColumns: ["game_id"];
+          },
+          {
+            foreignKeyName: "scores_game_id_fkey";
+            columns: ["game_id"];
+            isOneToOne: false;
+            referencedRelation: "games";
+            referencedColumns: ["id"];
+          },
+        ];
       };
     };
     Views: {
-      [_ in never]: never;
+      game_leaderboards: {
+        Row: {
+          created_at: string | null;
+          game_id: string | null;
+          score: number | null;
+          user_id: string | null;
+          username: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "scores_game_id_fkey";
+            columns: ["game_id"];
+            isOneToOne: false;
+            referencedRelation: "game_stats";
+            referencedColumns: ["game_id"];
+          },
+          {
+            foreignKeyName: "scores_game_id_fkey";
+            columns: ["game_id"];
+            isOneToOne: false;
+            referencedRelation: "games";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      game_stats: {
+        Row: {
+          best: number | null;
+          game_id: string | null;
+          players: number | null;
+          plays: number | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       [_ in never]: never;

@@ -10,16 +10,45 @@ export type Game = {
   /** Texto largo del Detalle. */
   long: string;
   cat: GameCategory;
-  /** Clase CSS de la portada: `cover-bricks`. */
+  /** Clase CSS de la portada: `cover-bricks`. Vive en `app/globals.css`. */
   cover: string;
   /** Variante de color del botón JUGAR. */
   color: GameColor;
-  best: number;
-  /** Ya formateado: "12.4K". */
-  plays: string;
+  /** Orden en el catálogo. En la base es único y va de diez en diez. */
+  sortOrder: number;
 };
 
-export const GAMES: Game[] = [
+/**
+ * Cifras del juego. No son un dato del juego: son una consulta sobre `scores`,
+ * servida por la vista `public.game_stats`. Por eso no están en `Game`.
+ */
+export type GameStats = {
+  gameId: string;
+  best: number;
+  plays: number;
+  players: number;
+};
+
+export type GameWithStats = Game & { stats: GameStats };
+
+/** Estadísticas de un juego que nadie ha jugado todavía. */
+export function emptyStats(gameId: string): GameStats {
+  return { gameId, best: 0, plays: 0, players: 0 };
+}
+
+/**
+ * Copia de respaldo del catálogo.
+ *
+ * La fuente de verdad es `public.games`; esto es lo que se sirve cuando faltan
+ * las variables de entorno de Supabase o la consulta falla. El `README.md`
+ * promete que la aplicación se sirve sin configurar, y una portada sin juegos
+ * no es «degradada», es rota.
+ *
+ * Tiene que coincidir con la siembra de la migración `create_games`. Si
+ * divergen, el catálogo cambia según haya o no configuración: por eso
+ * `lib/catalog.ts` avisa por consola cada vez que cae aquí.
+ */
+export const FALLBACK_GAMES: Game[] = [
   {
     id: "bloque-buster",
     title: "BLOQUE BUSTER",
@@ -28,8 +57,7 @@ export const GAMES: Game[] = [
     cat: "ARCADE",
     cover: "cover-bricks",
     color: "cyan",
-    best: 28450,
-    plays: "12.4K",
+    sortOrder: 10,
   },
   {
     id: "caida",
@@ -39,8 +67,7 @@ export const GAMES: Game[] = [
     cat: "PUZZLE",
     cover: "cover-tetro",
     color: "magenta",
-    best: 184220,
-    plays: "31.8K",
+    sortOrder: 20,
   },
   {
     id: "serpentina",
@@ -50,8 +77,7 @@ export const GAMES: Game[] = [
     cat: "ARCADE",
     cover: "cover-snake",
     color: "green",
-    best: 7820,
-    plays: "9.1K",
+    sortOrder: 30,
   },
   {
     id: "gloton",
@@ -61,8 +87,7 @@ export const GAMES: Game[] = [
     cat: "ARCADE",
     cover: "cover-glot",
     color: "yellow",
-    best: 96400,
-    plays: "27.2K",
+    sortOrder: 40,
   },
   {
     id: "invasores",
@@ -72,8 +97,7 @@ export const GAMES: Game[] = [
     cat: "SHOOTER",
     cover: "cover-invaders",
     color: "green",
-    best: 54190,
-    plays: "18.0K",
+    sortOrder: 50,
   },
   {
     id: "rocas",
@@ -83,8 +107,7 @@ export const GAMES: Game[] = [
     cat: "SHOOTER",
     cover: "cover-rocas",
     color: "yellow",
-    best: 41200,
-    plays: "15.6K",
+    sortOrder: 60,
   },
   {
     id: "ranaria",
@@ -94,8 +117,7 @@ export const GAMES: Game[] = [
     cat: "ARCADE",
     cover: "cover-rana",
     color: "green",
-    best: 18900,
-    plays: "6.4K",
+    sortOrder: 70,
   },
   {
     id: "duelo-pixel",
@@ -105,8 +127,7 @@ export const GAMES: Game[] = [
     cat: "VERSUS",
     cover: "cover-duelo",
     color: "cyan",
-    best: 24,
-    plays: "4.2K",
+    sortOrder: 80,
   },
   {
     id: "asteroides",
@@ -116,18 +137,13 @@ export const GAMES: Game[] = [
     cat: "SHOOTER",
     cover: "cover-asteroides",
     color: "cyan",
-    best: 0,
-    plays: "0",
+    sortOrder: 90,
   },
 ];
 
 export const CATS = ["TODOS", "ARCADE", "PUZZLE", "SHOOTER", "VERSUS"] as const;
 
 export type Cat = (typeof CATS)[number];
-
-export function getGame(id: string): Game | undefined {
-  return GAMES.find((game) => game.id === id);
-}
 
 /**
  * Tope superior de una puntuación aceptable.
@@ -136,7 +152,3 @@ export function getGame(id: string): Game | undefined {
  * coincidir con la restricción `scores_score_range` de `public.scores`.
  */
 export const MAX_SCORE = 10_000_000;
-
-export function isKnownGame(id: string): boolean {
-  return GAMES.some((game) => game.id === id);
-}

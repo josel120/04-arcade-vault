@@ -5,7 +5,7 @@ import Link from "next/link";
 import { MiniCard } from "@/components/mini-card";
 import { FeatureIcon, FloatingSilhouettes } from "@/components/pixel-art";
 import { useReveal } from "@/components/use-reveal";
-import { GAMES } from "@/lib/games";
+import type { Game } from "@/lib/games";
 import { FAQ, FEATURES, PRICE_PERKS, STATS, TICKER, TOP_PLAYERS } from "@/lib/landing";
 
 /** Oro, plata y bronce para los tres primeros puestos del top de la landing. */
@@ -16,7 +16,7 @@ function podiumClass(index: number): string {
   return "";
 }
 
-export function Landing() {
+export function Landing({ games }: { games: Game[] }) {
   useReveal();
 
   return (
@@ -92,7 +92,7 @@ export function Landing() {
         </div>
 
         <div className="mini-rail">
-          {GAMES.slice(0, 6).map((game) => (
+          {games.slice(0, 6).map((game) => (
             <MiniCard key={game.id} game={game} />
           ))}
         </div>

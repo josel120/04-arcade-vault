@@ -1,5 +1,9 @@
 import { Landing } from "@/components/landing";
+import { listGames } from "@/lib/catalog";
 
-export default function HomePage() {
-  return <Landing />;
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const games = await listGames();
+  return <Landing games={games} />;
 }

@@ -3,18 +3,18 @@
 import { useMemo, useState } from "react";
 
 import { GameCard } from "@/components/game-card";
-import { CATS, GAMES, type Cat } from "@/lib/games";
+import { CATS, type Cat, type GameWithStats } from "@/lib/games";
 
-export function Library() {
+export function Library({ games }: { games: GameWithStats[] }) {
   const [query, setQuery] = useState("");
   const [cat, setCat] = useState<Cat>("TODOS");
 
   const filtered = useMemo(() => {
     const needle = query.toLowerCase();
-    return GAMES.filter(
+    return games.filter(
       (game) => (cat === "TODOS" || game.cat === cat) && game.title.toLowerCase().includes(needle),
     );
-  }, [query, cat]);
+  }, [games, query, cat]);
 
   return (
     <div className="fade-in">

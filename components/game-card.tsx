@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useRef, type MouseEvent } from "react";
 
-import type { Game } from "@/lib/games";
+import type { Game, GameWithStats } from "@/lib/games";
 
 /** Variante de color del botón JUGAR; `cyan` y `green` usan el botón base. */
 function buttonClass(color: Game["color"]): string {
@@ -12,7 +12,7 @@ function buttonClass(color: Game["color"]): string {
   return "btn";
 }
 
-export function GameCard({ game }: { game: Game }) {
+export function GameCard({ game }: { game: GameWithStats }) {
   const router = useRouter();
   const tiltRef = useRef<HTMLDivElement>(null);
 
@@ -51,7 +51,7 @@ export function GameCard({ game }: { game: Game }) {
         <div className="row">
           <div className="score-badge">
             <span>MEJOR PUNTUACIÓN</span>
-            <b>{game.best.toLocaleString("es-ES")}</b>
+            <b>{game.stats.best.toLocaleString("es-ES")}</b>
           </div>
           <button
             type="button"
