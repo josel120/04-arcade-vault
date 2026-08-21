@@ -124,9 +124,7 @@ export function HallOfFame() {
         {rows.map((row, index) => (
           <div
             key={`${row.rank}-${row.name}`}
-            className={
-              "tr" + medalClass(index) + (row.isYou ? " you" : "")
-            }
+            className={"tr" + medalClass(index) + (row.isYou ? " you" : "")}
             style={{ animationDelay: `${index * 50}ms` }}
           >
             <div className="rk">#{String(row.rank).padStart(2, "0")}</div>
@@ -137,13 +135,8 @@ export function HallOfFame() {
         ))}
         {user && (
           <>
-            <div className="tr you-label">
-              ▸ TU MEJOR MARCA EN {game ? game.title : ""}
-            </div>
-            <div
-              className="tr you"
-              style={{ animationDelay: `${rows.length * 50 + 50}ms` }}
-            >
+            <div className="tr you-label">▸ TU MEJOR MARCA EN {game ? game.title : ""}</div>
+            <div className="tr you" style={{ animationDelay: `${rows.length * 50 + 50}ms` }}>
               <div className="rk" style={{ color: "var(--yellow)" }}>
                 #{String(summaryRank).padStart(2, "0")}
               </div>

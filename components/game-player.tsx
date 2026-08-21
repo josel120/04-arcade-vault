@@ -81,11 +81,7 @@ export function GamePlayer({ game }: { game: Game }) {
           </div>
         </div>
         <div className="hud-actions">
-          <button
-            type="button"
-            className="btn yellow"
-            onClick={() => setPaused((value) => !value)}
-          >
+          <button type="button" className="btn yellow" onClick={() => setPaused((value) => !value)}>
             {paused ? "REANUDAR" : "PAUSA"}
           </button>
           <button type="button" className="btn magenta" onClick={endGame}>
@@ -107,10 +103,7 @@ export function GamePlayer({ game }: { game: Game }) {
             <div className="player-ship" />
           </div>
           {paused && !over && (
-            <div
-              className="crt-content"
-              style={{ background: "rgba(0,0,0,0.6)", zIndex: 5 }}
-            >
+            <div className="crt-content" style={{ background: "rgba(0,0,0,0.6)", zIndex: 5 }}>
               <div>
                 <div className="pixel neon-yellow" style={{ fontSize: 22 }}>
                   EN PAUSA

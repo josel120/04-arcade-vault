@@ -13,9 +13,7 @@ export type ContactInput = {
   msg: string;
 };
 
-export type ContactResult =
-  | { ok: true }
-  | { ok: false; reason: "validation" | "config" | "send" };
+export type ContactResult = { ok: true } | { ok: false; reason: "validation" | "config" | "send" };
 
 /** Límites revalidados en servidor. El cliente no los impone. */
 export const LIMITS = {
@@ -39,11 +37,7 @@ export function validateContact(input: ContactInput): "validation" | null {
 
   if (!name || !email || !msg) return "validation";
 
-  if (
-    name.length > LIMITS.name ||
-    email.length > LIMITS.email ||
-    msg.length > LIMITS.msg
-  ) {
+  if (name.length > LIMITS.name || email.length > LIMITS.email || msg.length > LIMITS.msg) {
     return "validation";
   }
 

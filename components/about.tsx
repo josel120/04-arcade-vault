@@ -106,10 +106,9 @@ export function About() {
         <div className="kicker pixel neon-yellow">▸ ACERCA DE</div>
         <h1 className="about-title">ACERCA DE ARCADE VAULT</h1>
         <p className="about-mission">
-          ARCADE VAULT nació del amor por los videojuegos clásicos. Nuestra
-          misión es preservar y celebrar los arcades que definieron una
-          generación, haciéndolos accesibles para todos, en cualquier lugar y
-          sin costo.
+          ARCADE VAULT nació del amor por los videojuegos clásicos. Nuestra misión es preservar y
+          celebrar los arcades que definieron una generación, haciéndolos accesibles para todos, en
+          cualquier lugar y sin costo.
         </p>
 
         <div className="highlight-row">
@@ -142,8 +141,8 @@ export function About() {
             <div className="kicker pixel neon-cyan">▸ CONTACTO</div>
             <h2 className="contact-title">CONTÁCTANOS</h2>
             <p className="contact-sub">
-              ¿Tienes alguna sugerencia, quieres proponer un juego, o
-              simplemente quieres saludar? Escríbenos.
+              ¿Tienes alguna sugerencia, quieres proponer un juego, o simplemente quieres saludar?
+              Escríbenos.
             </p>
             <div className="contact-tips">
               <div className="tip">
@@ -164,11 +163,7 @@ export function About() {
           {/* `noValidate`: la validación nativa del navegador se comería el
               envío de un correo mal formado y nunca se vería el terminal en
               rojo. Quien decide es la revalidación del servidor. */}
-          <form
-            className={`contact-form${shake ? " shake" : ""}`}
-            onSubmit={onSubmit}
-            noValidate
-          >
+          <form className={`contact-form${shake ? " shake" : ""}`} onSubmit={onSubmit} noValidate>
             {status === "idle" || status === "sending" ? (
               <>
                 <div className="field">
@@ -177,9 +172,7 @@ export function About() {
                     id="contact-name"
                     name="name"
                     value={form.name}
-                    onChange={(event) =>
-                      setForm({ ...form, name: event.target.value })
-                    }
+                    onChange={(event) => setForm({ ...form, name: event.target.value })}
                     placeholder="px_kai"
                   />
                 </div>
@@ -190,9 +183,7 @@ export function About() {
                     name="email"
                     type="email"
                     value={form.email}
-                    onChange={(event) =>
-                      setForm({ ...form, email: event.target.value })
-                    }
+                    onChange={(event) => setForm({ ...form, email: event.target.value })}
                     placeholder="jugador@vault.gg"
                   />
                 </div>
@@ -203,9 +194,7 @@ export function About() {
                     name="msg"
                     rows={5}
                     value={form.msg}
-                    onChange={(event) =>
-                      setForm({ ...form, msg: event.target.value })
-                    }
+                    onChange={(event) => setForm({ ...form, msg: event.target.value })}
                     placeholder="Cuéntanos qué tienes en mente…"
                   />
                 </div>
@@ -228,8 +217,7 @@ export function About() {
                 </div>
                 <div className="term-body">
                   <div className="line">
-                    <span className="prompt">vault@arcade:~$</span>{" "}
-                    ./send_message --to=team
+                    <span className="prompt">vault@arcade:~$</span> ./send_message --to=team
                   </div>
                   <div className="line dim">[OK] Conectando con servidor…</div>
                   <div className="line dim">[OK] Validando contenido…</div>
@@ -262,8 +250,7 @@ export function About() {
                 </div>
                 <div className="term-body">
                   <div className="line">
-                    <span className="prompt">vault@arcade:~$</span>{" "}
-                    ./send_message --to=team
+                    <span className="prompt">vault@arcade:~$</span> ./send_message --to=team
                   </div>
                   <div className="line dim">{ERROR_LINES[reason][0]}</div>
                   <div className="line dim">{ERROR_LINES[reason][1]}</div>
@@ -272,11 +259,7 @@ export function About() {
                     <span className="caret">_</span>
                   </div>
                   <div style={{ marginTop: 18 }}>
-                    <button
-                      className="btn ghost"
-                      type="button"
-                      onClick={() => setStatus("idle")}
-                    >
+                    <button className="btn ghost" type="button" onClick={() => setStatus("idle")}>
                       REINTENTAR
                     </button>
                   </div>

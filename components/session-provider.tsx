@@ -10,13 +10,7 @@ import {
   type ReactNode,
 } from "react";
 
-import {
-  appendScore,
-  readUser,
-  writeUser,
-  type SavedScore,
-  type SessionUser,
-} from "@/lib/session";
+import { appendScore, readUser, writeUser, type SavedScore, type SessionUser } from "@/lib/session";
 
 type SessionContextValue = {
   user: SessionUser | null;
@@ -58,9 +52,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     [user, signIn, signOut, saveScore],
   );
 
-  return (
-    <SessionContext.Provider value={value}>{children}</SessionContext.Provider>
-  );
+  return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
 }
 
 export function useSession(): SessionContextValue {

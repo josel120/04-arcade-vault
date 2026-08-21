@@ -14,9 +14,7 @@ export function Nav() {
   const homeActive = pathname === "/";
   // Juegos queda activo también en el detalle y en el reproductor.
   const gamesActive =
-    pathname === "/games" ||
-    pathname.startsWith("/juego") ||
-    pathname.startsWith("/jugar");
+    pathname === "/games" || pathname.startsWith("/juego") || pathname.startsWith("/jugar");
   const salonActive = pathname === "/salon";
   const aboutActive = pathname === "/about";
   const authActive = pathname === "/auth";
@@ -82,32 +80,16 @@ export function Nav() {
         <Link className={homeActive ? "active" : ""} href="/" onClick={close}>
           Inicio
         </Link>
-        <Link
-          className={gamesActive ? "active" : ""}
-          href="/games"
-          onClick={close}
-        >
+        <Link className={gamesActive ? "active" : ""} href="/games" onClick={close}>
           Juegos
         </Link>
-        <Link
-          className={salonActive ? "active" : ""}
-          href="/salon"
-          onClick={close}
-        >
+        <Link className={salonActive ? "active" : ""} href="/salon" onClick={close}>
           Salón de la Fama
         </Link>
-        <Link
-          className={aboutActive ? "active" : ""}
-          href="/about"
-          onClick={close}
-        >
+        <Link className={aboutActive ? "active" : ""} href="/about" onClick={close}>
           Acerca de
         </Link>
-        <Link
-          className={authActive ? "active" : ""}
-          href="/auth"
-          onClick={close}
-        >
+        <Link className={authActive ? "active" : ""} href="/auth" onClick={close}>
           {user ? "Cuenta" : "Iniciar Sesión"}
         </Link>
         <div style={{ flex: 1 }} />

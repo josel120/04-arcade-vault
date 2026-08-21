@@ -63,9 +63,7 @@ export type ContactInput = {
   msg: string;
 };
 
-export type ContactResult =
-  | { ok: true }
-  | { ok: false; reason: "validation" | "config" | "send" };
+export type ContactResult = { ok: true } | { ok: false; reason: "validation" | "config" | "send" };
 
 // Límites revalidados en servidor. El cliente no los impone.
 export const LIMITS = {

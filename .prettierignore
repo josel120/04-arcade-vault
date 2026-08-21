@@ -1,0 +1,15 @@
+.next/
+out/
+build/
+node_modules/
+public/
+package-lock.json
+next-env.d.ts
+*.tsbuildinfo
+
+# Maqueta de referencia: React UMD por CDN, no es código de la app.
+references/
+
+# Skills instaladas de terceros (npx skills add): no divergir de upstream.
+.claude/skills/
+.agents/
