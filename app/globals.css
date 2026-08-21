@@ -2867,6 +2867,29 @@ a {
   transform: none;
 }
 
+/* Banda de error del formulario de acceso (SPEC 04).
+   Mismo lenguaje visual que el terminal rojo del SPEC 03, pero en una sola
+   linea: el acceso no tiene proceso que narrar, solo un motivo que dar.
+   El estado de carga reutiliza .btn:disabled, que ya existe arriba. */
+.auth-error {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--red);
+  border-left-width: 3px;
+  background: rgba(255, 46, 61, 0.08);
+  box-shadow: 0 0 18px rgba(255, 46, 61, 0.18);
+  color: var(--red);
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  line-height: 1.5;
+  text-shadow: 0 0 6px rgba(255, 46, 61, 0.45);
+}
+.auth-error::before {
+  content: "[ERROR] ";
+  opacity: 0.7;
+}
+
 /* ===== accessibility floor ===== */
 :focus-visible {
   outline: 2px solid var(--cyan);
