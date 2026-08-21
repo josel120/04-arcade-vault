@@ -1,60 +1,167 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
+import { saveScore as saveScoreToBoard } from "@/app/jugar/[id]/actions";
+import { GameCanvas } from "@/components/games/game-canvas";
+import { TouchPad } from "@/components/games/touch-pad";
 import { useSession } from "@/components/session-provider";
 import type { Game } from "@/lib/games";
+import type { GameAction, GameEngine, GameSnapshot } from "@/lib/games/engine";
+import { getEngineEntry } from "@/lib/games/registry";
 
-/** Puntos por nivel: cada 2500 puntos sube el contador de nivel. */
+/** Puntos por nivel en los juegos que todavía son maqueta. */
 const POINTS_PER_LEVEL = 2500;
 
 /** Longitud máxima del alias que se guarda con la puntuación. */
 const MAX_NAME_LENGTH = 10;
 
+type Stats = { score: number; lives: number; level: number };
+
+const INITIAL_STATS: Stats = { score: 0, lives: 3, level: 1 };
+
+/**
+ * Qué pasó y qué puede hacer el jugador. Nunca "ha ocurrido un error".
+ */
+const SAVE_ERROR_TEXT: Record<"auth" | "validation" | "config" | "db", string> = {
+  auth: "Tu sesión ha caducado. Vuelve a entrar para guardar en el marcador.",
+  validation: "El servidor ha rechazado esta puntuación.",
+  config: "El marcador no está disponible ahora mismo. Tu puntuación sigue en este navegador.",
+  db: "No se pudo guardar en el marcador. Vuelve a intentarlo.",
+};
+
 export function GamePlayer({ game }: { game: Game }) {
   const { user, saveScore } = useSession();
 
-  const [score, setScore] = useState(0);
-  const [lives] = useState(3);
+  // Los juegos sin motor registrado caen a la arena decorativa del SPEC 01.
+  const entry = getEngineEntry(game.id);
+
+  const [stats, setStats] = useState<Stats>(INITIAL_STATS);
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
   const [name, setName] = useState("");
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
-  // El nivel se deriva de la puntuación: no necesita estado propio y se
-  // reinicia solo cuando la puntuación vuelve a 0.
-  const level = Math.floor(score / POINTS_PER_LEVEL) + 1;
+  const engineRef = useRef<GameEngine | null>(null);
+  const pausedRef = useRef(false);
+  const overRef = useRef(false);
+  const playerNameRef = useRef("INVITADO");
+  /** El histórico local se escribe una vez, aunque el marcador haya que reintentarlo. */
+  const localSavedRef = useRef(false);
 
   // El provider lee la sesión tras montar, así que el HUD la toma del contexto
   // en cada render en vez de congelarla en un estado inicial.
   const playerName = user ? user.name : "INVITADO";
+  const isAccount = user?.kind === "account";
 
   useEffect(() => {
-    if (over || paused) return;
+    playerNameRef.current = playerName;
+  }, [playerName]);
+
+  useEffect(() => {
+    overRef.current = over;
+  }, [over]);
+
+  // Maqueta: puntuación simulada para los juegos que aún no tienen motor.
+  useEffect(() => {
+    if (entry || over || paused) return;
     const timer = setInterval(() => {
-      setScore((value) => value + Math.floor(10 + Math.random() * 90));
+      setStats((prev) => {
+        const score = prev.score + Math.floor(10 + Math.random() * 90);
+        return { score, lives: 3, level: Math.floor(score / POINTS_PER_LEVEL) + 1 };
+      });
     }, 220);
     // Se limpia al pausar, al terminar y al desmontar el componente.
     return () => clearInterval(timer);
-  }, [over, paused]);
+  }, [entry, over, paused]);
+
+  const onSnapshot = useCallback((snapshot: GameSnapshot) => {
+    setStats({ score: snapshot.score, lives: snapshot.lives, level: snapshot.level });
+  }, []);
+
+  const openGameOver = useCallback((finalScore: number) => {
+    setStats((prev) => ({ ...prev, score: finalScore }));
+    // El campo de iniciales toma el alias vigente al abrirse el modal.
+    setName(playerNameRef.current);
+    setOver(true);
+  }, []);
+
+  const onReady = useCallback((engine: GameEngine | null) => {
+    engineRef.current = engine;
+    // El jugador puede haber pausado mientras cargaba el módulo del motor.
+    if (engine && pausedRef.current) engine.pause();
+  }, []);
+
+  const applyPause = useCallback((next: boolean) => {
+    pausedRef.current = next;
+    setPaused(next);
+    const engine = engineRef.current;
+    if (!engine) return;
+    if (next) engine.pause();
+    else engine.resume();
+  }, []);
+
+  const togglePause = useCallback(() => {
+    if (overRef.current) return;
+    applyPause(!pausedRef.current);
+  }, [applyPause]);
+
+  const autoPause = useCallback(() => {
+    if (overRef.current) return;
+    applyPause(true);
+  }, [applyPause]);
+
+  const onTouchAction = useCallback((action: GameAction, active: boolean) => {
+    engineRef.current?.setAction(action, active);
+  }, []);
 
   const endGame = () => {
-    // El campo de iniciales toma el alias vigente en el momento de abrir el modal.
-    setName(playerName);
-    setOver(true);
+    if (entry) {
+      // El motor avisa por `onGameOver`, que es quien abre el modal.
+      engineRef.current?.finish();
+      return;
+    }
+    openGameOver(stats.score);
   };
 
   const restart = () => {
-    setScore(0);
-    setPaused(false);
+    setStats(INITIAL_STATS);
     setOver(false);
+    overRef.current = false;
     setSaved(false);
+    setSaving(false);
+    setSaveError(null);
+    localSavedRef.current = false;
+    applyPause(false);
+    engineRef.current?.restart();
   };
 
-  const save = () => {
-    saveScore({ game: game.id, score, name });
-    setSaved(true);
+  const save = async () => {
+    if (!localSavedRef.current) {
+      saveScore({ game: game.id, score: stats.score, name });
+      localSavedRef.current = true;
+    }
+
+    // El invitado no tiene fila en `auth.users`: su marca se queda local.
+    if (!isAccount) {
+      setSaved(true);
+      return;
+    }
+
+    setSaving(true);
+    setSaveError(null);
+    try {
+      const result = await saveScoreToBoard({ gameId: game.id, score: stats.score });
+      if (result.ok) setSaved(true);
+      else setSaveError(SAVE_ERROR_TEXT[result.reason]);
+    } catch {
+      setSaveError(SAVE_ERROR_TEXT.db);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -69,22 +176,22 @@ export function GamePlayer({ game }: { game: Game }) {
           </div>
           <div className="hud-stat">
             <div className="l">Puntuación</div>
-            <div className="v">{score.toLocaleString("es-ES")}</div>
+            <div className="v">{stats.score.toLocaleString("es-ES")}</div>
           </div>
           <div className="hud-stat lives">
             <div className="l">Vidas</div>
-            <div className="v">{"♥ ".repeat(lives).trim() || "—"}</div>
+            <div className="v">{"♥ ".repeat(stats.lives).trim() || "—"}</div>
           </div>
           <div className="hud-stat level">
             <div className="l">Nivel</div>
-            <div className="v">{String(level).padStart(2, "0")}</div>
+            <div className="v">{String(stats.level).padStart(2, "0")}</div>
           </div>
         </div>
         <div className="hud-actions">
-          <button type="button" className="btn yellow" onClick={() => setPaused((value) => !value)}>
+          <button type="button" className="btn yellow" onClick={togglePause} disabled={over}>
             {paused ? "REANUDAR" : "PAUSA"}
           </button>
-          <button type="button" className="btn magenta" onClick={endGame}>
+          <button type="button" className="btn magenta" onClick={endGame} disabled={over}>
             FIN
           </button>
           <Link className="btn ghost" href={`/juego/${game.id}`}>
@@ -95,13 +202,25 @@ export function GamePlayer({ game }: { game: Game }) {
 
       <div className="crt">
         <div className="crt-screen">
-          <div className="game-arena">
-            <div className="grid-floor" />
-            <div className="enemy e1" />
-            <div className="enemy e2" />
-            <div className="enemy e3" />
-            <div className="player-ship" />
-          </div>
+          {entry ? (
+            <GameCanvas
+              entry={entry}
+              title={game.title}
+              onSnapshot={onSnapshot}
+              onGameOver={openGameOver}
+              onReady={onReady}
+              onTogglePause={togglePause}
+              onAutoPause={autoPause}
+            />
+          ) : (
+            <div className="game-arena">
+              <div className="grid-floor" />
+              <div className="enemy e1" />
+              <div className="enemy e2" />
+              <div className="enemy e3" />
+              <div className="player-ship" />
+            </div>
+          )}
           {paused && !over && (
             <div className="crt-content" style={{ background: "rgba(0,0,0,0.6)", zIndex: 5 }}>
               <div>
@@ -130,27 +249,73 @@ export function GamePlayer({ game }: { game: Game }) {
         </div>
       </div>
 
+      {entry && (
+        <>
+          <div className="game-keys">
+            <span className="key-group">
+              <kbd>◄</kbd>
+              <kbd>►</kbd>
+              Girar
+            </span>
+            <span className="key-group">
+              <kbd>▲</kbd>
+              Propulsar
+            </span>
+            <span className="key-group">
+              <kbd>Espacio</kbd>
+              Disparar
+            </span>
+            <span className="key-group">
+              <kbd>P</kbd>
+              Pausa
+            </span>
+          </div>
+          <TouchPad onAction={onTouchAction} />
+        </>
+      )}
+
       {over && (
         <div className="modal-bd">
           <div className="modal" role="dialog" aria-modal="true" aria-label="Fin del juego">
             <h2>FIN DEL JUEGO</h2>
             <div className="final-label">PUNTUACIÓN FINAL</div>
-            <div className="final">{score.toLocaleString("es-ES")}</div>
+            <div className="final">{stats.score.toLocaleString("es-ES")}</div>
             {!saved ? (
-              <div className="input-row">
-                <input
-                  value={name}
-                  onChange={(event) =>
-                    setName(event.target.value.toUpperCase().slice(0, MAX_NAME_LENGTH))
-                  }
-                  placeholder="TUS INICIALES"
-                  aria-label="Tus iniciales"
-                  maxLength={MAX_NAME_LENGTH}
-                />
-                <button type="button" className="btn yellow" onClick={save}>
-                  GUARDAR PUNTUACIÓN
-                </button>
-              </div>
+              <>
+                {isAccount ? (
+                  <div className="save-as">
+                    <span className="l">Se guarda como</span>
+                    <span className="v">{playerName}</span>
+                  </div>
+                ) : null}
+                <div className="input-row">
+                  {isAccount ? null : (
+                    <input
+                      value={name}
+                      onChange={(event) =>
+                        setName(event.target.value.toUpperCase().slice(0, MAX_NAME_LENGTH))
+                      }
+                      placeholder="TUS INICIALES"
+                      aria-label="Tus iniciales"
+                      maxLength={MAX_NAME_LENGTH}
+                    />
+                  )}
+                  <button type="button" className="btn yellow" onClick={save} disabled={saving}>
+                    {saving ? "GUARDANDO…" : "GUARDAR PUNTUACIÓN"}
+                  </button>
+                </div>
+                {!isAccount && (
+                  <p className="guest-note">
+                    Juegas como invitado: esta marca se queda en este navegador.{" "}
+                    <Link href="/auth">Crea una cuenta</Link> para competir en el marcador.
+                  </p>
+                )}
+                {saveError && (
+                  <div className="auth-error" role="alert">
+                    {saveError}
+                  </div>
+                )}
+              </>
             ) : (
               <div className="toast-saved">▸ PUNTUACIÓN GUARDADA_</div>
             )}
