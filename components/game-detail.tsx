@@ -1,10 +1,10 @@
 import Link from "next/link";
 
 import { Leaderboard } from "@/components/leaderboard";
-import type { Game } from "@/lib/games";
+import type { GameWithStats } from "@/lib/games";
 import type { ScoreRow } from "@/lib/scores";
 
-export function GameDetail({ game, scores }: { game: Game; scores: ScoreRow[] }) {
+export function GameDetail({ game, scores }: { game: GameWithStats; scores: ScoreRow[] }) {
   return (
     <div className="av-detail fade-in">
       <div>
@@ -23,7 +23,7 @@ export function GameDetail({ game, scores }: { game: Game; scores: ScoreRow[] })
           <div className="stat-strip">
             <div>
               <div className="l">Partidas</div>
-              <div className="v">{game.plays}</div>
+              <div className="v">{game.stats.plays.toLocaleString("es-ES")}</div>
             </div>
             <div>
               <div className="l">Mejor global</div>
@@ -34,7 +34,7 @@ export function GameDetail({ game, scores }: { game: Game; scores: ScoreRow[] })
                   textShadow: "0 0 6px rgba(255,0,110,0.5)",
                 }}
               >
-                {game.best.toLocaleString("es-ES")}
+                {game.stats.best.toLocaleString("es-ES")}
               </div>
             </div>
             <div>

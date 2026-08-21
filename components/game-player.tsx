@@ -7,7 +7,7 @@ import { saveScore as saveScoreToBoard } from "@/app/jugar/[id]/actions";
 import { GameCanvas } from "@/components/games/game-canvas";
 import { TouchPad } from "@/components/games/touch-pad";
 import { useSession } from "@/components/session-provider";
-import type { Game } from "@/lib/games";
+import type { GameWithStats } from "@/lib/games";
 import type { GameAction, GameEngine, GameSnapshot } from "@/lib/games/engine";
 import { getEngineEntry } from "@/lib/games/registry";
 
@@ -31,7 +31,7 @@ const SAVE_ERROR_TEXT: Record<"auth" | "validation" | "config" | "db", string> =
   db: "No se pudo guardar en el marcador. Vuelve a intentarlo.",
 };
 
-export function GamePlayer({ game }: { game: Game }) {
+export function GamePlayer({ game }: { game: GameWithStats }) {
   const { user, saveScore } = useSession();
 
   // Los juegos sin motor registrado caen a la arena decorativa del SPEC 01.
@@ -44,6 +44,12 @@ export function GamePlayer({ game }: { game: Game }) {
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  /** Puesto conseguido, tal y como lo devuelve la acción. Null para el invitado. */
+  const [standing, setStanding] = useState<{
+    rank: number;
+    players: number;
+    isRecord: boolean;
+  } | null>(null);
 
   const engineRef = useRef<GameEngine | null>(null);
   const pausedRef = useRef(false);
@@ -134,6 +140,7 @@ export function GamePlayer({ game }: { game: Game }) {
     setSaved(false);
     setSaving(false);
     setSaveError(null);
+    setStanding(null);
     localSavedRef.current = false;
     applyPause(false);
     engineRef.current?.restart();
@@ -155,8 +162,12 @@ export function GamePlayer({ game }: { game: Game }) {
     setSaveError(null);
     try {
       const result = await saveScoreToBoard({ gameId: game.id, score: stats.score });
-      if (result.ok) setSaved(true);
-      else setSaveError(SAVE_ERROR_TEXT[result.reason]);
+      if (result.ok) {
+        setStanding({ rank: result.rank, players: result.players, isRecord: result.isRecord });
+        setSaved(true);
+      } else {
+        setSaveError(SAVE_ERROR_TEXT[result.reason]);
+      }
     } catch {
       setSaveError(SAVE_ERROR_TEXT.db);
     } finally {
@@ -317,7 +328,20 @@ export function GamePlayer({ game }: { game: Game }) {
                 )}
               </>
             ) : (
-              <div className="toast-saved">▸ PUNTUACIÓN GUARDADA_</div>
+              <div className="saved-block">
+                <div className="toast-saved">▸ PUNTUACIÓN GUARDADA_</div>
+                {/* `players` a 0 significa que el puesto no se pudo calcular:
+                    la puntuación está guardada igual, así que se calla en vez
+                    de enseñar un `#00 DE 0`. */}
+                {standing && standing.players > 0 && (
+                  <div className="standing">
+                    <span className="rank">
+                      PUESTO #{String(standing.rank).padStart(2, "0")} DE {standing.players}
+                    </span>
+                    {standing.isRecord && <span className="record">¡NUEVO RÉCORD PERSONAL!</span>}
+                  </div>
+                )}
+              </div>
             )}
             <div className="actions">
               <button type="button" className="btn" onClick={restart}>

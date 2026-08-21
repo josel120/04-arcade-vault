@@ -1,20 +1,9 @@
-"use client";
-
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
 
-import { useSession } from "@/components/session-provider";
-import { GAMES, getGame } from "@/lib/games";
-import { seededScores, type ScoreRow } from "@/lib/scores";
-import { scoresForGame, type SavedScore } from "@/lib/session";
-
-/** Marca de tiempo a DD/MM/AAAA, la convención de fechas del proyecto. */
-function formatDate(at: number): string {
-  const date = new Date(at);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  return `${day}/${month}/${date.getFullYear()}`;
-}
+import { EmptyBoard } from "@/components/leaderboard";
+import { LocalScores } from "@/components/local-scores";
+import type { GameWithStats } from "@/lib/games";
+import type { LeaderboardRow } from "@/lib/leaderboard";
 
 /** Clase de medalla para los tres primeros puestos. */
 function medalClass(index: number): string {
@@ -24,41 +13,33 @@ function medalClass(index: number): string {
   return "";
 }
 
-export function HallOfFame() {
-  const { user } = useSession();
-  const [tab, setTab] = useState(GAMES[0].id);
-  const [mine, setMine] = useState<SavedScore[]>([]);
+type Props = {
+  games: GameWithStats[];
+  /** Juego de la pestaña activa. */
+  active: GameWithStats;
+  rows: LeaderboardRow[];
+  /** `auth.users.id` de la sesión, o `null` si es invitado o no hay sesión. */
+  viewerId: string | null;
+};
 
-  useEffect(() => {
-    // localStorage solo existe en cliente: se lee tras montar para que el
-    // primer render coincida con el HTML del servidor.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMine(scoresForGame(tab));
-  }, [tab]);
+/**
+ * Salón de la Fama.
+ *
+ * Es un Server Component: la pestaña activa vive en la URL (`?juego=`) y no en
+ * un `useState`, así que un marcador concreto se puede enlazar y compartir, que
+ * es media gracia de competir. Hasta el SPEC 06 esto era un componente cliente
+ * que mezclaba doce filas inventadas con `localStorage` y, cuando el jugador no
+ * tenía marca, se inventaba también su puesto y su fecha.
+ */
+export function HallOfFame({ games, active, rows, viewerId }: Props) {
+  // El podio solo dibuja las plazas que existen. Con la base real, lo normal el
+  // primer día es que no haya ninguna.
+  const podium = [rows[1], rows[0], rows[2]];
+  const podiumClasses = ["podium-slot silver", "podium-slot gold", "podium-slot bronze"];
+  const podiumRanks = ["02", "01", "03"];
+  const hasPodium = rows.length > 0;
 
-  const rows = useMemo<ScoreRow[]>(() => {
-    // Misma semilla que la maqueta: determinista por juego, 12 filas.
-    const seeded = seededScores(tab.length * 23 + 7, 12);
-    const own: ScoreRow[] = mine.map((entry) => ({
-      rank: 0,
-      name: entry.name,
-      score: entry.score,
-      date: formatDate(entry.at),
-      isYou: true,
-    }));
-
-    return [...seeded, ...own]
-      .sort((a, b) => b.score - a.score)
-      .map((row, index) => ({ ...row, rank: index + 1 }));
-  }, [tab, mine]);
-
-  const game = getGame(tab);
-  const best = rows.find((row) => row.isYou);
-
-  // Sin marca propia todavía, el resumen conserva los valores simulados de la maqueta.
-  const summaryRank = best ? best.rank : Math.floor(8 + (tab.length % 4));
-  const summaryScore = best ? best.score : rows[5].score - 2400;
-  const summaryDate = best ? best.date : "11/05/2026";
+  const own = viewerId ? rows.find((row) => row.userId === viewerId) : undefined;
 
   return (
     <div className="av-hall fade-in">
@@ -70,93 +51,112 @@ export function HallOfFame() {
       </div>
 
       <div className="hall-tabs">
-        {GAMES.map((entry) => (
-          <button
-            key={entry.id}
-            type="button"
-            className={"chip" + (tab === entry.id ? " active" : "")}
-            onClick={() => setTab(entry.id)}
-            aria-pressed={tab === entry.id}
+        {games.map((game) => (
+          <Link
+            key={game.id}
+            href={`/salon?juego=${game.id}`}
+            className={"chip" + (active.id === game.id ? " active" : "")}
+            aria-current={active.id === game.id ? "page" : undefined}
           >
-            {entry.title}
-          </button>
+            {game.title}
+          </Link>
         ))}
       </div>
 
-      <div className="podium">
-        <div className="podium-slot silver">
-          <div className="rank-num">02</div>
-          <div className="name">{rows[1].name}</div>
-          <div className="score">{rows[1].score.toLocaleString("es-ES")}</div>
-          <div className="date">{rows[1].date}</div>
+      {hasPodium && (
+        <div className="podium">
+          {podium.map((row, index) =>
+            row ? (
+              <div key={row.userId} className={podiumClasses[index]}>
+                {index === 1 && (
+                  <div
+                    className="pixel"
+                    style={{ fontSize: 9, color: "var(--gold)", letterSpacing: "0.18em" }}
+                  >
+                    CAMPEÓN
+                  </div>
+                )}
+                <div
+                  className="rank-num"
+                  style={index === 1 ? { fontSize: 36, marginTop: 4 } : undefined}
+                >
+                  {podiumRanks[index]}
+                </div>
+                <div className="name">{row.name}</div>
+                <div className="score" style={index === 1 ? { fontSize: 20 } : undefined}>
+                  {row.score.toLocaleString("es-ES")}
+                </div>
+                <div className="date">{row.date}</div>
+              </div>
+            ) : (
+              <div key={podiumRanks[index]} className={podiumClasses[index] + " vacant"}>
+                <div className="rank-num">{podiumRanks[index]}</div>
+                <div className="name">VACANTE</div>
+              </div>
+            ),
+          )}
         </div>
-        <div className="podium-slot gold">
-          <div
-            className="pixel"
-            style={{ fontSize: 9, color: "var(--gold)", letterSpacing: "0.18em" }}
-          >
-            CAMPEÓN
-          </div>
-          <div className="rank-num" style={{ fontSize: 36, marginTop: 4 }}>
-            01
-          </div>
-          <div className="name">{rows[0].name}</div>
-          <div className="score" style={{ fontSize: 20 }}>
-            {rows[0].score.toLocaleString("es-ES")}
-          </div>
-          <div className="date">{rows[0].date}</div>
-        </div>
-        <div className="podium-slot bronze">
-          <div className="rank-num">03</div>
-          <div className="name">{rows[2].name}</div>
-          <div className="score">{rows[2].score.toLocaleString("es-ES")}</div>
-          <div className="date">{rows[2].date}</div>
-        </div>
-      </div>
+      )}
 
       <div className="hall-table">
-        <div className="th">
-          <div>RANGO</div>
-          <div>JUGADOR</div>
-          <div>PUNTUACIÓN</div>
-          <div>FECHA</div>
-        </div>
-        {rows.map((row, index) => (
-          <div
-            key={`${row.rank}-${row.name}`}
-            className={"tr" + medalClass(index) + (row.isYou ? " you" : "")}
-            style={{ animationDelay: `${index * 50}ms` }}
-          >
-            <div className="rk">#{String(row.rank).padStart(2, "0")}</div>
-            <div className="pl">{row.name}</div>
-            <div className="sc">{row.score.toLocaleString("es-ES")}</div>
-            <div className="dt">{row.date}</div>
-          </div>
-        ))}
-        {user && (
+        {rows.length === 0 ? (
+          <EmptyBoard />
+        ) : (
           <>
-            <div className="tr you-label">▸ TU MEJOR MARCA EN {game ? game.title : ""}</div>
-            <div className="tr you" style={{ animationDelay: `${rows.length * 50 + 50}ms` }}>
-              <div className="rk" style={{ color: "var(--yellow)" }}>
-                #{String(summaryRank).padStart(2, "0")}
-              </div>
-              <div className="pl" style={{ color: "var(--yellow)" }}>
-                {user.name}
-              </div>
-              <div
-                className="sc"
-                style={{
-                  color: "var(--yellow)",
-                  textShadow: "0 0 6px rgba(245,255,0,0.5)",
-                }}
-              >
-                {summaryScore.toLocaleString("es-ES")}
-              </div>
-              <div className="dt">{summaryDate}</div>
+            <div className="th">
+              <div>RANGO</div>
+              <div>JUGADOR</div>
+              <div>PUNTUACIÓN</div>
+              <div>FECHA</div>
             </div>
+            {rows.map((row, index) => (
+              <div
+                key={row.userId}
+                className={"tr" + medalClass(index) + (row.userId === viewerId ? " you" : "")}
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <div className="rk">#{String(row.rank).padStart(2, "0")}</div>
+                <div className="pl">{row.name}</div>
+                <div className="sc">{row.score.toLocaleString("es-ES")}</div>
+                <div className="dt">{row.date}</div>
+              </div>
+            ))}
+          </>
+        )}
+
+        {viewerId && (
+          <>
+            <div className="tr you-label">▸ TU MEJOR MARCA EN {active.title}</div>
+            {own ? (
+              <div className="tr you" style={{ animationDelay: `${rows.length * 50 + 50}ms` }}>
+                <div className="rk" style={{ color: "var(--yellow)" }}>
+                  #{String(own.rank).padStart(2, "0")}
+                </div>
+                <div className="pl" style={{ color: "var(--yellow)" }}>
+                  {own.name}
+                </div>
+                <div
+                  className="sc"
+                  style={{
+                    color: "var(--yellow)",
+                    textShadow: "0 0 6px rgba(245,255,0,0.5)",
+                  }}
+                >
+                  {own.score.toLocaleString("es-ES")}
+                </div>
+                <div className="dt">{own.date}</div>
+              </div>
+            ) : (
+              <div className="tr you-none">
+                Todavía no has puntuado en {active.title}.{" "}
+                <Link href={`/jugar/${active.id}`}>Juega una partida</Link> y aparecerás aquí.
+              </div>
+            )}
           </>
         )}
       </div>
+
+      <LocalScores gameId={active.id} gameTitle={active.title} />
 
       <div style={{ textAlign: "center", marginTop: 32 }}>
         <Link className="btn lg" href="/">
