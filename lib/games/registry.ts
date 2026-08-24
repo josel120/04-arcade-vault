@@ -47,6 +47,13 @@ export type GameEngineEntry = {
    * centrada obligaría a jugar con una sola mano.
    */
   touch: TouchButton[][];
+  /**
+   * True si el juego produce sonido. Solo entonces el reproductor pinta el
+   * interruptor: un botón de sonido en un juego mudo es un control que no
+   * hace nada. Obligatorio, para que el compilador obligue a decidirlo al
+   * añadir un juego.
+   */
+  audio: boolean;
   load: () => Promise<{ createEngine: CreateEngine }>;
 };
 
@@ -78,6 +85,7 @@ export const GAME_ENGINES: Record<string, GameEngineEntry> = {
         { action: "fire", glyph: "●", label: "Disparar", tone: "magenta" },
       ],
     ],
+    audio: false,
     load: () => import("@/lib/games/asteroides/engine"),
   },
 
@@ -101,7 +109,28 @@ export const GAME_ENGINES: Record<string, GameEngineEntry> = {
         { action: "fire", glyph: "⤓", label: "Soltar la pieza de golpe", tone: "magenta" },
       ],
     ],
+    audio: false,
     load: () => import("@/lib/games/tetris/engine"),
+  },
+
+  arkanoid: {
+    width: 800,
+    height: 600,
+    keys: [
+      { keys: ["◄", "►"], label: "Mover la paleta" },
+      // `Ratón` no es una tecla y va igualmente en la leyenda: estos son
+      // glifos de presentación, y el jugador tiene que enterarse de que puede
+      // usar el puntero, que es como se juega bien a esto.
+      { keys: ["Ratón"], label: "Mover la paleta" },
+    ],
+    // Un botón en cada grupo, uno por pulgar: es el reparto que mejor se
+    // ajusta a una paleta que solo va a izquierda y derecha.
+    touch: [
+      [{ action: "left", glyph: "◄", label: "Mover a la izquierda", tone: "cyan" }],
+      [{ action: "right", glyph: "►", label: "Mover a la derecha", tone: "cyan" }],
+    ],
+    audio: true,
+    load: () => import("@/lib/games/arkanoid/engine"),
   },
 };
 

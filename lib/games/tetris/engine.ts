@@ -502,6 +502,9 @@ export function createEngine({ canvas, onSnapshot, onGameOver }: CreateEngineOpt
       if (REPEATABLE.has(action)) held.set(action, REPEAT_DELAY);
     },
 
+    // TETRIS no suena: el contrato se cumple sin hacer nada.
+    setMuted() {},
+
     destroy() {
       if (destroyed) return;
       destroyed = true;
