@@ -71,6 +71,15 @@ Secrets: copy `.env.template` → `.env.local`. `NEXT_PUBLIC_SUPABASE_URL` / `NE
 - **`/spec` and `/spec-impl`** from [Klerith/fernando-skills](https://github.com/Klerith/fernando-skills) are installed (see `skills-lock.json`); `frontend-design` comes from `anthropics/skills`. Installed skills are duplicated into `.agents/skills/` and `.claude/skills/` by the installer — don't edit them, re-run `npx skills@latest add …` instead.
 - `/spec-impl` is launched by the user, never by me; when running it, chain all the steps and review at the end.
 
+## Agents
+
+Project subagents live in `.claude/agents/`.
+
+- **`game-planner`** — decides _which_ game should be next in the catalog, the step before `/spec` and `/nuevo-juego`. It reads the catalog, the engine contract and the `nuevo-juego` phases to price each candidate, researches the classic on the web, and returns 2-3 candidates with one recommendation. It has no `Bash` and no MCP: it plans, it never implements, and the only file it writes is its own ledger.
+- Its memory across cold starts is `references/game-suggestions-todo.md` — a to-do of every game it has suggested, with a state (`siguiente` / `pendiente` / `implementado` / `descartado`) and why. It reads that file first thing and updates it last thing; without it the agent would re-suggest the same game forever.
+
 ## Reference material
 
 `references/` is read-only source material, excluded from lint/format: `templates/` and `home-about/` are the original React UMD mock-ups the UI was ported from, and `started-games/` holds the vanilla-JS originals (`02-asteroids`, `03-tetris`, `04-arkanoid`) that the first three engines were ported from. `vibora` had no original — it was written from scratch.
+
+The one exception to "read-only" is `references/game-suggestions-todo.md`, which is not source material at all: it is the live ledger the `game-planner` agent keeps. That agent is expected to write to it — don't "fix" it for doing so.
