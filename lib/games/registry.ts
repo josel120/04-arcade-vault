@@ -80,6 +80,29 @@ export const GAME_ENGINES: Record<string, GameEngineEntry> = {
     ],
     load: () => import("@/lib/games/asteroides/engine"),
   },
+
+  tetris: {
+    width: 800,
+    height: 600,
+    keys: [
+      { keys: ["◄", "►"], label: "Mover" },
+      { keys: ["▲", "X"], label: "Rotar" },
+      { keys: ["▼"], label: "Bajar" },
+      { keys: ["Espacio"], label: "Soltar" },
+    ],
+    touch: [
+      [
+        { action: "left", glyph: "◄", label: "Mover a la izquierda", tone: "cyan" },
+        { action: "right", glyph: "►", label: "Mover a la derecha", tone: "cyan" },
+      ],
+      [
+        { action: "thrust", glyph: "⟳", label: "Rotar la pieza", tone: "yellow" },
+        { action: "down", glyph: "▼", label: "Bajar más rápido", tone: "cyan" },
+        { action: "fire", glyph: "⤓", label: "Soltar la pieza de golpe", tone: "magenta" },
+      ],
+    ],
+    load: () => import("@/lib/games/tetris/engine"),
+  },
 };
 
 export function getEngineEntry(gameId: string): GameEngineEntry | undefined {

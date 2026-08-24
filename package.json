@@ -9,7 +9,8 @@
     "lint": "eslint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint:fix": "eslint --fix"
+    "lint:fix": "eslint --fix",
+    "prueba:tetris": "node --experimental-strip-types --import ./scripts/alias-register.mjs scripts/prueba-tetris.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
