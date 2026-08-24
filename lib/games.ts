@@ -149,6 +149,16 @@ export const FALLBACK_GAMES: Game[] = [
     color: "cyan",
     sortOrder: 100,
   },
+  {
+    id: "arkanoid",
+    title: "ARKANOID",
+    short: "Rompe los cinco muros antes de quedarte sin pelotas.",
+    long: "Una paleta, una pelota y cinco muros de bloques que no se parecen en nada entre sí: una parrilla, una pirámide, un tablero de ajedrez, filas con huecos y un marco cruzado. Cada nivel lanza la pelota un diez por ciento más rápido que el anterior. Tienes tres vidas para llegar al final.",
+    cat: "ARCADE",
+    cover: "cover-arkanoid",
+    color: "yellow",
+    sortOrder: 110,
+  },
 ];
 
 export const CATS = ["TODOS", "ARCADE", "PUZZLE", "SHOOTER", "VERSUS"] as const;

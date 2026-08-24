@@ -40,6 +40,12 @@ export type GameEngine = {
   finish: () => void;
   /** Para los controles táctiles: activa o suelta una acción. */
   setAction: (action: GameAction, active: boolean) => void;
+  /**
+   * Silencia o devuelve el sonido. Obligatorio, como `setAction`: un juego
+   * que declara audio y no responde al interruptor deja un botón muerto que
+   * solo se descubre jugando. Los juegos mudos lo implementan vacío.
+   */
+  setMuted: (muted: boolean) => void;
   /** Cancela el rAF y suelta todos los listeners. Idempotente. */
   destroy: () => void;
 };

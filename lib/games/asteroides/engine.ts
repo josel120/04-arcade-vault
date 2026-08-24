@@ -650,6 +650,9 @@ export function createEngine({ canvas, onSnapshot, onGameOver }: CreateEngineOpt
       }
     },
 
+    // ASTEROIDES no suena: el contrato se cumple sin hacer nada.
+    setMuted() {},
+
     destroy() {
       if (destroyed) return;
       destroyed = true;

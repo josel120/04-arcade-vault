@@ -10,6 +10,7 @@ import { useSession } from "@/components/session-provider";
 import type { GameWithStats } from "@/lib/games";
 import type { GameAction, GameEngine, GameSnapshot } from "@/lib/games/engine";
 import { getEngineEntry } from "@/lib/games/registry";
+import { readMuted, writeMuted } from "@/lib/preferences";
 
 /** Puntos por nivel en los juegos que todavía son maqueta. */
 const POINTS_PER_LEVEL = 2500;
@@ -44,6 +45,7 @@ export function GamePlayer({ game }: { game: GameWithStats }) {
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [muted, setMuted] = useState(false);
   /** Puesto conseguido, tal y como lo devuelve la acción. Null para el invitado. */
   const [standing, setStanding] = useState<{
     rank: number;
@@ -57,6 +59,7 @@ export function GamePlayer({ game }: { game: GameWithStats }) {
   const playerNameRef = useRef("INVITADO");
   /** El histórico local se escribe una vez, aunque el marcador haya que reintentarlo. */
   const localSavedRef = useRef(false);
+  const mutedRef = useRef(false);
 
   // El provider lee la sesión tras montar, así que el HUD la toma del contexto
   // en cada render en vez de congelarla en un estado inicial.
@@ -66,6 +69,17 @@ export function GamePlayer({ game }: { game: GameWithStats }) {
   useEffect(() => {
     playerNameRef.current = playerName;
   }, [playerName]);
+
+  // La preferencia se lee tras montar y no en el estado inicial: el servidor
+  // no tiene `localStorage` y pintaría el botón contrario al del cliente. Es
+  // la misma precaución que toma `components/local-scores.tsx`, con la misma
+  // excepción a la regla.
+  useEffect(() => {
+    const stored = readMuted();
+    mutedRef.current = stored;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMuted(stored);
+  }, []);
 
   useEffect(() => {
     overRef.current = over;
@@ -99,6 +113,18 @@ export function GamePlayer({ game }: { game: GameWithStats }) {
     engineRef.current = engine;
     // El jugador puede haber pausado mientras cargaba el módulo del motor.
     if (engine && pausedRef.current) engine.pause();
+    // Y el estado del sonido se le da aquí, no por `CreateEngineOptions`,
+    // porque éste es el sitio donde el motor ya existe y la preferencia ya
+    // se ha leído.
+    if (engine) engine.setMuted(mutedRef.current);
+  }, []);
+
+  const toggleMuted = useCallback(() => {
+    const next = !mutedRef.current;
+    mutedRef.current = next;
+    setMuted(next);
+    writeMuted(next);
+    engineRef.current?.setMuted(next);
   }, []);
 
   const applyPause = useCallback((next: boolean) => {
@@ -199,6 +225,13 @@ export function GamePlayer({ game }: { game: GameWithStats }) {
           </div>
         </div>
         <div className="hud-actions">
+          {/* Solo los juegos que suenan enseñan el interruptor. En los demás
+              sería un control que no hace nada. */}
+          {entry?.audio && (
+            <button type="button" className="btn ghost" aria-pressed={muted} onClick={toggleMuted}>
+              {muted ? "SILENCIO" : "SONIDO"}
+            </button>
+          )}
           <button type="button" className="btn yellow" onClick={togglePause} disabled={over}>
             {paused ? "REANUDAR" : "PAUSA"}
           </button>
