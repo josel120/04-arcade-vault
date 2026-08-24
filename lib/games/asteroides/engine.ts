@@ -42,8 +42,11 @@ const POWERUP_DURATION = 5;
 const POWERUP_TTL = 12;
 const TRIPLE_SPREAD = 0.18;
 
-/** Teclas del juego, por acción abstracta. */
-const ACTION_KEYS: Record<GameAction, string> = {
+/**
+ * Teclas del juego, por acción abstracta. Parcial: el contrato declara `down`
+ * para los juegos que la necesitan, y aquí no hay nada que bajar.
+ */
+const ACTION_KEYS: Partial<Record<GameAction, string>> = {
   left: "ArrowLeft",
   right: "ArrowRight",
   thrust: "ArrowUp",
@@ -637,6 +640,8 @@ export function createEngine({ canvas, onSnapshot, onGameOver }: CreateEngineOpt
 
     setAction(action, active) {
       const code = ACTION_KEYS[action];
+      // Una acción que este juego no usa no hace nada.
+      if (!code) return;
       if (active) {
         if (!keys[code]) justPressed[code] = true;
         keys[code] = true;
