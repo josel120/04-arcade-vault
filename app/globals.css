@@ -980,6 +980,65 @@ a {
       55.6% / 25.2% 6.4% no-repeat;
 }
 
+/* SERPENTINA, la maqueta, es un gusano corto flotando sobre un degradado: no
+   tiene tablero. Lo que separa a VÍBORA de ella es justo lo que separa a los
+   dos juegos, así que la portada va de la arena y no del bicho: una rejilla de
+   10 × 7 —casi cuadrada sobre el 4/3 de la tarjeta— encerrada en un marco
+   encendido, que son las cuatro paredes que matan, y una víbora larga que gira
+   tres veces en lugar de un segmento recto. A tamaño de tarjeta se distinguen
+   sin leer el título: una tiene tablero y la otra no. */
+.cover-vibora {
+  background:
+    radial-gradient(90% 70% at 50% 44%, rgba(0, 255, 136, 0.13) 0%, transparent 68%),
+    linear-gradient(180deg, #04160e 0%, #051208 58%, #020a06 100%);
+}
+/* El cuerpo, del tramo más viejo al más nuevo: el verde sube de brillo hacia
+   la cabeza para que se lea de un vistazo por dónde va. Cinco tramos, tres
+   giros. La comida está donde la víbora todavía no llega. */
+.cover-vibora::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+        circle at 50% 50%,
+        #ffffff 0 14%,
+        #ff4fb0 26%,
+        #ff006e 46%,
+        rgba(255, 0, 110, 0.32) 62%,
+        transparent 72%
+      )
+      88.889% 16.667% / 10% 14.286% no-repeat,
+    radial-gradient(circle at 38% 32%, #ffffff 0 20%, #8dffcb 32%, #00ff88 62%, #00bf68 100%)
+      77.778% 83.333% / 10% 14.286% no-repeat,
+    linear-gradient(180deg, #12ff92, #00d977) 50% 83.333% / 60% 14.286% no-repeat,
+    linear-gradient(90deg, #17e08a, #0fb06c) 22.222% 75% / 10% 42.857% no-repeat,
+    linear-gradient(180deg, #12c477, #0c9155) 40% 50% / 50% 14.286% no-repeat,
+    linear-gradient(90deg, #0da762, #0a7c48) 66.667% 25% / 10% 42.857% no-repeat,
+    linear-gradient(180deg, #0b8f52, #07683c) 25% 16.667% / 60% 14.286% no-repeat;
+  filter: drop-shadow(0 0 7px rgba(0, 255, 136, 0.45));
+}
+/* Encima de todo: las juntas de la rejilla, que cruzan también el cuerpo para
+   que la víbora se lea hecha de celdas y no de tubos, y el marco de las
+   paredes. Una sola trama a lo ancho de la tarjeta basta porque los tramos
+   están alineados a esta misma rejilla. */
+.cover-vibora::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(0, 255, 136, 0.66), rgba(0, 214, 118, 0.66)) 50% 0 / 100% 2.6%
+      no-repeat,
+    linear-gradient(90deg, rgba(0, 255, 136, 0.66), rgba(0, 214, 118, 0.66)) 50% 100% / 100% 2.6%
+      no-repeat,
+    linear-gradient(180deg, rgba(0, 255, 136, 0.66), rgba(0, 214, 118, 0.66)) 0 50% / 1.9% 100%
+      no-repeat,
+    linear-gradient(180deg, rgba(0, 255, 136, 0.66), rgba(0, 214, 118, 0.66)) 100% 50% / 1.9% 100%
+      no-repeat,
+    repeating-linear-gradient(90deg, rgba(2, 12, 7, 0.5) 0 1px, transparent 1px 10%),
+    repeating-linear-gradient(180deg, rgba(2, 12, 7, 0.5) 0 1px, transparent 1px 14.286%);
+}
+
 /* ===== detail screen ===== */
 .av-detail {
   display: grid;

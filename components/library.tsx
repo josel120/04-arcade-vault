@@ -5,14 +5,28 @@ import { useMemo, useState } from "react";
 import { GameCard } from "@/components/game-card";
 import { CATS, type Cat, type GameWithStats } from "@/lib/games";
 
+/**
+ * Minúsculas y sin tildes.
+ *
+ * Nadie escribe «víbora» con tilde en un buscador, ni «caída», ni «glotón».
+ * `NFD` separa cada letra de su acento y `\p{Diacritic}` se lleva los acentos
+ * que quedan sueltos, así que «VÍBORA» y «vibora» acaban en la misma cadena.
+ */
+function fold(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "");
+}
+
 export function Library({ games }: { games: GameWithStats[] }) {
   const [query, setQuery] = useState("");
   const [cat, setCat] = useState<Cat>("TODOS");
 
   const filtered = useMemo(() => {
-    const needle = query.toLowerCase();
+    const needle = fold(query);
     return games.filter(
-      (game) => (cat === "TODOS" || game.cat === cat) && game.title.toLowerCase().includes(needle),
+      (game) => (cat === "TODOS" || game.cat === cat) && fold(game.title).includes(needle),
     );
   }, [games, query, cat]);
 
