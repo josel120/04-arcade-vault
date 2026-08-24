@@ -23,8 +23,13 @@ export type GameSnapshot = {
 /**
  * Acciones abstractas. Existen para que los controles táctiles no tengan que
  * saber qué tecla usa cada juego.
+ *
+ * Los nombres vienen de asteroides, que fue el primero, pero el significado lo
+ * pone cada juego: en un juego de piezas, `thrust` rota y `fire` suelta. Lo que
+ * el jugador lee de cada acción no sale de aquí, sale de los controles que cada
+ * motor declara en `lib/games/registry.ts`.
  */
-export type GameAction = "left" | "right" | "thrust" | "fire";
+export type GameAction = "left" | "right" | "thrust" | "fire" | "down";
 
 export type GameEngine = {
   pause: () => void;
