@@ -263,25 +263,24 @@ export function GamePlayer({ game }: { game: GameWithStats }) {
       {entry && (
         <>
           <div className="game-keys">
-            <span className="key-group">
-              <kbd>◄</kbd>
-              <kbd>►</kbd>
-              Girar
-            </span>
-            <span className="key-group">
-              <kbd>▲</kbd>
-              Propulsar
-            </span>
-            <span className="key-group">
-              <kbd>Espacio</kbd>
-              Disparar
-            </span>
+            {entry.keys.map((hint) => (
+              <span className="key-group" key={hint.label}>
+                {hint.keys.map((key) => (
+                  <kbd key={key}>{key}</kbd>
+                ))}
+                {hint.label}
+              </span>
+            ))}
+            {/* La pausa no la declara ningún juego: la engancha el anfitrión
+                del canvas y es la misma para todos. Si cada motor tuviera que
+                declararla, el primero que se le olvidara dejaría al jugador sin
+                saber cómo pausar. */}
             <span className="key-group">
               <kbd>P</kbd>
               Pausa
             </span>
           </div>
-          <TouchPad onAction={onTouchAction} />
+          <TouchPad clusters={entry.touch} onAction={onTouchAction} />
         </>
       )}
 

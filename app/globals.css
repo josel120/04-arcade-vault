@@ -859,6 +859,52 @@ a {
   filter: drop-shadow(0 0 6px rgba(0, 245, 255, 0.4));
 }
 
+/* TETRIS. Comparte categoría y tema con CAÍDA, así que tiene que distinguirse
+   de cover-tetro a tamaño de miniatura: aquélla son piezas sueltas flotando en
+   el aire sobre morado; ésta es el pozo con la pila y una línea completa
+   encendiéndose, que es el instante del juego. Los colores son los de las
+   piezas del motor, pastel contra el neón del resto de la parrilla.
+   Ningún comentario va dentro de un valor: eso ya tumbó la hoja una vez. */
+.cover-tetris {
+  background:
+    repeating-linear-gradient(90deg, transparent 0 10%, rgba(230, 233, 255, 0.07) 10% 10.3%),
+    linear-gradient(180deg, #0d1230 0%, #080b1e 62%, #05060f 100%);
+}
+/* La pieza que cae, arriba del todo. */
+.cover-tetris::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(#81c784, #81c784) 44.44% 6.7% / 9% 10.5% no-repeat,
+    linear-gradient(#81c784, #81c784) 55.56% 6.7% / 9% 10.5% no-repeat,
+    linear-gradient(#81c784, #81c784) 33.33% 19.8% / 9% 10.5% no-repeat,
+    linear-gradient(#81c784, #81c784) 44.44% 19.8% / 9% 10.5% no-repeat;
+  opacity: 0.85;
+}
+/* La pila, apagada, y encima la línea completa: lo único que cruza la tarjeta
+   de lado a lado y lo único que brilla. */
+.cover-tetris::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), var(--cyan) 45%, #0aa8c8) 0 77.8% / 100%
+      10.5% no-repeat,
+    linear-gradient(#ba68c8, #ba68c8) 11.11% 60.8% / 9% 10.5% no-repeat,
+    linear-gradient(#e57373, #e57373) 22.22% 60.8% / 9% 10.5% no-repeat,
+    linear-gradient(#ffb74d, #ffb74d) 66.67% 60.8% / 9% 10.5% no-repeat,
+    linear-gradient(#90caf9, #90caf9) 0% 100% / 9% 10.5% no-repeat,
+    linear-gradient(#ffd54f, #ffd54f) 11.11% 100% / 9% 10.5% no-repeat,
+    linear-gradient(#e57373, #e57373) 22.22% 100% / 9% 10.5% no-repeat,
+    linear-gradient(#ba68c8, #ba68c8) 44.44% 100% / 9% 10.5% no-repeat,
+    linear-gradient(#81c784, #81c784) 55.56% 100% / 9% 10.5% no-repeat,
+    linear-gradient(#ffb74d, #ffb74d) 66.67% 100% / 9% 10.5% no-repeat,
+    linear-gradient(#90caf9, #90caf9) 88.89% 100% / 9% 10.5% no-repeat,
+    linear-gradient(#ffd54f, #ffd54f) 100% 100% / 9% 10.5% no-repeat;
+  filter: drop-shadow(0 0 10px rgba(0, 245, 255, 0.5));
+}
+
 /* ===== detail screen ===== */
 .av-detail {
   display: grid;
@@ -2995,7 +3041,11 @@ a {
   gap: 12px;
 }
 .game-touch .pad-key {
-  width: 72px;
+  /* Se encoge para que un juego de cinco botones —tetris— quepa en un viewport
+     de 390 px sin desbordar. El mínimo es lo que sigue siendo pulsable con el
+     pulgar. */
+  flex: 0 1 72px;
+  min-width: 54px;
   height: 64px;
   display: inline-flex;
   align-items: center;

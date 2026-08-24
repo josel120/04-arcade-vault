@@ -139,6 +139,16 @@ export const FALLBACK_GAMES: Game[] = [
     color: "cyan",
     sortOrder: 90,
   },
+  {
+    id: "tetris",
+    title: "TETRIS",
+    short: "Rota, encaja y funde líneas contra el reloj.",
+    long: "Ocho piezas distintas caen sobre un pozo de diez columnas. Rótalas apurando los saltos de pared, apóyate en la sombra que marca dónde van a aterrizar y complétalas en líneas para hacerlas desaparecer. Cada diez líneas sube el nivel y la caída se acelera, hasta que el pozo llega arriba.",
+    cat: "PUZZLE",
+    cover: "cover-tetris",
+    color: "cyan",
+    sortOrder: 100,
+  },
 ];
 
 export const CATS = ["TODOS", "ARCADE", "PUZZLE", "SHOOTER", "VERSUS"] as const;

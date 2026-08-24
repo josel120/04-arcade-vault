@@ -3,19 +3,21 @@
 import type { PointerEvent } from "react";
 
 import type { GameAction } from "@/lib/games/engine";
+import type { TouchButton } from "@/lib/games/registry";
 
 /**
- * Controles táctiles, repartidos como el mueble de un salón recreativo: girar
- * bajo el pulgar izquierdo, propulsar y disparar bajo el derecho. Una fila
- * centrada obligaría a jugar con una sola mano.
+ * Controles táctiles, repartidos como el mueble de un salón recreativo: un
+ * grupo bajo cada pulgar. Una fila centrada obligaría a jugar con una mano.
  *
- * El color reutiliza la semántica que el HUD de al lado ya enseña: cian para
- * navegar, amarillo para el nivel y la propulsión, magenta para lo que quema
- * vidas.
+ * Qué botones hay, qué hacen y de qué color son lo declara cada juego en
+ * `GAME_ENGINES`. Este componente solo los pinta: no sabe qué juego está
+ * corriendo, y por eso no puede mentir sobre lo que hace cada botón.
  */
 export function TouchPad({
+  clusters,
   onAction,
 }: {
+  clusters: TouchButton[][];
   onAction: (action: GameAction, active: boolean) => void;
 }) {
   const bind = (action: GameAction) => ({
@@ -32,32 +34,21 @@ export function TouchPad({
 
   return (
     <div className="game-touch" aria-label="Controles táctiles">
-      <div className="pad-cluster">
-        <button
-          type="button"
-          className="pad-key cyan"
-          aria-label="Girar a la izquierda"
-          {...bind("left")}
-        >
-          ◄
-        </button>
-        <button
-          type="button"
-          className="pad-key cyan"
-          aria-label="Girar a la derecha"
-          {...bind("right")}
-        >
-          ►
-        </button>
-      </div>
-      <div className="pad-cluster">
-        <button type="button" className="pad-key yellow" aria-label="Propulsar" {...bind("thrust")}>
-          ▲
-        </button>
-        <button type="button" className="pad-key magenta" aria-label="Disparar" {...bind("fire")}>
-          ●
-        </button>
-      </div>
+      {clusters.map((cluster, index) => (
+        <div className="pad-cluster" key={index}>
+          {cluster.map((button) => (
+            <button
+              key={button.action}
+              type="button"
+              className={`pad-key ${button.tone}`}
+              aria-label={button.label}
+              {...bind(button.action)}
+            >
+              {button.glyph}
+            </button>
+          ))}
+        </div>
+      ))}
     </div>
   );
 }
