@@ -159,6 +159,16 @@ export const FALLBACK_GAMES: Game[] = [
     color: "yellow",
     sortOrder: 110,
   },
+  {
+    id: "vibora",
+    title: "VÍBORA",
+    short: "Crece con cada bocado hasta que ya no cabes.",
+    long: "Una víbora de luz recorre una rejilla de cuarenta por treinta buscando comida. Cada bocado la alarga un segmento y cada cinco suben el nivel, la velocidad y lo que vale el siguiente. Las cuatro paredes matan, tu propia cola también, y tienes tres vidas.",
+    cat: "ARCADE",
+    cover: "cover-vibora",
+    color: "green",
+    sortOrder: 120,
+  },
 ];
 
 export const CATS = ["TODOS", "ARCADE", "PUZZLE", "SHOOTER", "VERSUS"] as const;

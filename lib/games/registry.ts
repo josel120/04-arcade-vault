@@ -132,6 +132,28 @@ export const GAME_ENGINES: Record<string, GameEngineEntry> = {
     audio: true,
     load: () => import("@/lib/games/arkanoid/engine"),
   },
+
+  vibora: {
+    width: 800,
+    height: 600,
+    // Las cuatro flechas en un solo renglón: cuatro que dijeran «Mover arriba»,
+    // «Mover abajo»… serían cuatro veces la misma información.
+    keys: [{ keys: ["◄", "▲", "►", "▼"], label: "Mover" }],
+    // Horizontales bajo el pulgar izquierdo, verticales bajo el derecho. Es el
+    // mismo reparto que ASTEROIDES y TETRIS, así que no hace falta tocar CSS.
+    touch: [
+      [
+        { action: "left", glyph: "◄", label: "Mover a la izquierda", tone: "cyan" },
+        { action: "right", glyph: "►", label: "Mover a la derecha", tone: "cyan" },
+      ],
+      [
+        { action: "thrust", glyph: "▲", label: "Mover arriba", tone: "yellow" },
+        { action: "down", glyph: "▼", label: "Mover abajo", tone: "yellow" },
+      ],
+    ],
+    audio: true,
+    load: () => import("@/lib/games/vibora/engine"),
+  },
 };
 
 export function getEngineEntry(gameId: string): GameEngineEntry | undefined {
