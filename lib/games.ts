@@ -169,6 +169,16 @@ export const FALLBACK_GAMES: Game[] = [
     color: "green",
     sortOrder: 120,
   },
+  {
+    id: "frogger",
+    title: "FROGGER",
+    short: "Esquiva el tráfico y no te ahogues en el río.",
+    long: "Guía a tu rana a través de cinco carriles de tráfico y seis de río en una cuadrícula de neón. Salta sobre troncos y tortugas —cuidado, se sumergen— y ocupa las cinco bocas de meta antes de que se acabe el tiempo. Cada ronda acelera el tráfico y acorta el reloj. Tres vidas, cero margen de error.",
+    cat: "ARCADE",
+    cover: "cover-frogger",
+    color: "magenta",
+    sortOrder: 130,
+  },
 ];
 
 export const CATS = ["TODOS", "ARCADE", "PUZZLE", "SHOOTER", "VERSUS"] as const;

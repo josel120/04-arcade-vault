@@ -154,6 +154,24 @@ export const GAME_ENGINES: Record<string, GameEngineEntry> = {
     audio: true,
     load: () => import("@/lib/games/vibora/engine"),
   },
+
+  frogger: {
+    width: 800,
+    height: 600,
+    keys: [{ keys: ["◄", "▲", "►", "▼"], label: "Saltar" }],
+    touch: [
+      [
+        { action: "left", glyph: "◄", label: "Saltar a la izquierda", tone: "cyan" },
+        { action: "right", glyph: "►", label: "Saltar a la derecha", tone: "cyan" },
+      ],
+      [
+        { action: "thrust", glyph: "▲", label: "Saltar arriba", tone: "yellow" },
+        { action: "down", glyph: "▼", label: "Saltar abajo", tone: "yellow" },
+      ],
+    ],
+    audio: true,
+    load: () => import("@/lib/games/frogger/engine"),
+  },
 };
 
 export function getEngineEntry(gameId: string): GameEngineEntry | undefined {
