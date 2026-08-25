@@ -554,6 +554,11 @@ export function createEngine({ canvas, onSnapshot, onGameOver }: CreateEngineOpt
       if (muted) closeAudio();
     },
 
+    // Todavía dibuja con `GRID_LINE`/`FOOD`/`HEAD`… fijos: el chrome ya
+    // cambia de piel, el lienzo lo hará cuando este motor migre su paleta a
+    // un `skins.ts` hermano.
+    setSkin() {},
+
     destroy() {
       if (destroyed) return;
       destroyed = true;

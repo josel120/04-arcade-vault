@@ -653,6 +653,10 @@ export function createEngine({ canvas, onSnapshot, onGameOver }: CreateEngineOpt
     // ASTEROIDES no suena: el contrato se cumple sin hacer nada.
     setMuted() {},
 
+    // Todavía dibuja con literales fijos: el chrome ya cambia de piel, el
+    // lienzo lo hará cuando este motor migre su paleta a un `skins.ts`.
+    setSkin() {},
+
     destroy() {
       if (destroyed) return;
       destroyed = true;

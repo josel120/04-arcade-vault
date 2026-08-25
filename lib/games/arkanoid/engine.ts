@@ -468,6 +468,11 @@ export function createEngine({ canvas, onSnapshot, onGameOver }: CreateEngineOpt
       muted = next;
     },
 
+    // Todavía dibuja con `LEVELS` en `lib/games/arkanoid/levels.ts`: el
+    // chrome ya cambia de piel, el lienzo lo hará cuando este motor migre su
+    // paleta a un `skins.ts` hermano.
+    setSkin() {},
+
     destroy() {
       if (destroyed) return;
       destroyed = true;

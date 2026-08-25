@@ -31,6 +31,17 @@ export type GameSnapshot = {
  */
 export type GameAction = "left" | "right" | "thrust" | "fire" | "down";
 
+/**
+ * Piel del reproductor: el chrome (marco CRT, HUD, botones) responde a las
+ * tres en los doce juegos por igual, vía `data-skin` en `.av-player`. La
+ * paleta que cada motor dibuja dentro de su lienzo es aparte —la reciben por
+ * `setSkin`— y solo la migran los cuatro juegos con motor real, uno a uno.
+ *
+ * `"clasico"` es el valor por defecto y, por definición, el `:root` de
+ * siempre: no tiene bloque propio en `app/globals.css`.
+ */
+export type GameSkin = "clasico" | "retro" | "neon";
+
 export type GameEngine = {
   pause: () => void;
   resume: () => void;
@@ -46,6 +57,14 @@ export type GameEngine = {
    * solo se descubre jugando. Los juegos mudos lo implementan vacío.
    */
   setMuted: (muted: boolean) => void;
+  /**
+   * Cambia la piel en caliente, sin reiniciar la partida. Obligatorio, mismo
+   * trato que `setMuted`: un motor que no la implementa deja un selector que
+   * no repinta el lienzo. Los motores que todavía no migraron su paleta a un
+   * fichero `skins.ts` la implementan vacío —el lienzo sigue en `"clasico"`,
+   * pero el chrome de alrededor sí cambia igual.
+   */
+  setSkin: (skin: GameSkin) => void;
   /** Cancela el rAF y suelta todos los listeners. Idempotente. */
   destroy: () => void;
 };
@@ -55,6 +74,8 @@ export type CreateEngineOptions = {
   /** Solo se llama cuando algún campo del snapshot cambia de verdad. */
   onSnapshot: (snapshot: GameSnapshot) => void;
   onGameOver: (score: number) => void;
+  /** Piel con la que arranca el motor. Ver `GameEngine.setSkin`. */
+  skin: GameSkin;
 };
 
 export type CreateEngine = (options: CreateEngineOptions) => GameEngine;

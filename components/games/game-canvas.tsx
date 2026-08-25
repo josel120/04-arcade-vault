@@ -2,13 +2,25 @@
 
 import { useEffect, useRef } from "react";
 
-import { isTextTarget, type GameEngine, type GameSnapshot } from "@/lib/games/engine";
+import {
+  isTextTarget,
+  type GameEngine,
+  type GameSkin,
+  type GameSnapshot,
+} from "@/lib/games/engine";
 import type { GameEngineEntry } from "@/lib/games/registry";
 
 type GameCanvasProps = {
   entry: GameEngineEntry;
   /** Título del juego, para describir el lienzo a un lector de pantalla. */
   title: string;
+  /**
+   * Piel con la que arranca el motor. Los cambios en caliente no pasan por
+   * aquí —remontar el efecto reiniciaría la partida—, sino por
+   * `GameEngine.setSkin`, que el reproductor llama directamente sobre el
+   * motor ya creado.
+   */
+  skin: GameSkin;
   onSnapshot: (snapshot: GameSnapshot) => void;
   onGameOver: (score: number) => void;
   /** Entrega el motor al reproductor, y `null` al desmontar. */
@@ -28,6 +40,7 @@ type GameCanvasProps = {
 export function GameCanvas({
   entry,
   title,
+  skin,
   onSnapshot,
   onGameOver,
   onReady,
@@ -35,6 +48,13 @@ export function GameCanvas({
   onAutoPause,
 }: GameCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  /**
+   * Solo cuenta la piel vigente cuando el motor se crea: cambiarla después no
+   * debe remontar el efecto de abajo —reiniciaría la partida—, así que los
+   * cambios en caliente van por `GameEngine.setSkin`, no por aquí.
+   */
+  const initialSkinRef = useRef(skin);
 
   /**
    * Las llamadas del reproductor cambian de identidad en cada render suyo. Si
@@ -66,6 +86,7 @@ export function GameCanvas({
       if (cancelled) return;
       engine = createEngine({
         canvas,
+        skin: initialSkinRef.current,
         onSnapshot: (snapshot) => callbacks.current.onSnapshot(snapshot),
         onGameOver: (score) => callbacks.current.onGameOver(score),
       });

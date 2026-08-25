@@ -505,6 +505,10 @@ export function createEngine({ canvas, onSnapshot, onGameOver }: CreateEngineOpt
     // TETRIS no suena: el contrato se cumple sin hacer nada.
     setMuted() {},
 
+    // Todavía dibuja con `PIECES` en `lib/games/tetris/pieces.ts`: el chrome
+    // ya cambia de piel, el lienzo lo hará cuando este motor migre su paleta.
+    setSkin() {},
+
     destroy() {
       if (destroyed) return;
       destroyed = true;
