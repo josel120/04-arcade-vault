@@ -8,9 +8,17 @@ import { GameCanvas } from "@/components/games/game-canvas";
 import { TouchPad } from "@/components/games/touch-pad";
 import { useSession } from "@/components/session-provider";
 import type { GameWithStats } from "@/lib/games";
-import type { GameAction, GameEngine, GameSnapshot } from "@/lib/games/engine";
+import type { GameAction, GameEngine, GameSkin, GameSnapshot } from "@/lib/games/engine";
 import { getEngineEntry } from "@/lib/games/registry";
 import { readMuted, writeMuted } from "@/lib/preferences";
+import { readSkin, writeSkin } from "@/lib/skins";
+
+/** Las tres pieles, en el orden en que se enseñan en el selector del HUD. */
+const SKIN_OPTIONS: { value: GameSkin; label: string }[] = [
+  { value: "clasico", label: "CLÁSICO" },
+  { value: "retro", label: "RETRO" },
+  { value: "neon", label: "NEÓN" },
+];
 
 /** Puntos por nivel en los juegos que todavía son maqueta. */
 const POINTS_PER_LEVEL = 2500;
@@ -46,6 +54,7 @@ export function GamePlayer({ game }: { game: GameWithStats }) {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [muted, setMuted] = useState(false);
+  const [skin, setSkin] = useState<GameSkin>("clasico");
   /** Puesto conseguido, tal y como lo devuelve la acción. Null para el invitado. */
   const [standing, setStanding] = useState<{
     rank: number;
@@ -60,6 +69,7 @@ export function GamePlayer({ game }: { game: GameWithStats }) {
   /** El histórico local se escribe una vez, aunque el marcador haya que reintentarlo. */
   const localSavedRef = useRef(false);
   const mutedRef = useRef(false);
+  const skinRef = useRef<GameSkin>("clasico");
 
   // El provider lee la sesión tras montar, así que el HUD la toma del contexto
   // en cada render en vez de congelarla en un estado inicial.
@@ -80,6 +90,15 @@ export function GamePlayer({ game }: { game: GameWithStats }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMuted(stored);
   }, []);
+
+  // Misma cautela que arriba, pero por juego: la piel de INVASORES no tiene
+  // por qué ser la de ROCAS.
+  useEffect(() => {
+    const stored = readSkin(game.id);
+    skinRef.current = stored;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSkin(stored);
+  }, [game.id]);
 
   useEffect(() => {
     overRef.current = over;
@@ -113,10 +132,15 @@ export function GamePlayer({ game }: { game: GameWithStats }) {
     engineRef.current = engine;
     // El jugador puede haber pausado mientras cargaba el módulo del motor.
     if (engine && pausedRef.current) engine.pause();
-    // Y el estado del sonido se le da aquí, no por `CreateEngineOptions`,
-    // porque éste es el sitio donde el motor ya existe y la preferencia ya
-    // se ha leído.
-    if (engine) engine.setMuted(mutedRef.current);
+    // Y el estado del sonido y de la piel se le dan aquí, no por
+    // `CreateEngineOptions`: éste es el sitio donde el motor ya existe y las
+    // preferencias ya se han leído. La piel inicial que `GameCanvas` le pasa a
+    // `createEngine` puede haberse creado antes de que `readSkin` resolviera
+    // —es una carga asíncrona—, así que se reafirma aquí igual que el sonido.
+    if (engine) {
+      engine.setMuted(mutedRef.current);
+      engine.setSkin(skinRef.current);
+    }
   }, []);
 
   const toggleMuted = useCallback(() => {
@@ -126,6 +150,18 @@ export function GamePlayer({ game }: { game: GameWithStats }) {
     writeMuted(next);
     engineRef.current?.setMuted(next);
   }, []);
+
+  const changeSkin = useCallback(
+    (next: GameSkin) => {
+      skinRef.current = next;
+      setSkin(next);
+      writeSkin(game.id, next);
+      // Si el juego no tiene motor (la maqueta), no hay nada que avisar: el
+      // chrome ya cambió con el `data-skin` del contenedor.
+      engineRef.current?.setSkin(next);
+    },
+    [game.id],
+  );
 
   const applyPause = useCallback((next: boolean) => {
     pausedRef.current = next;
@@ -202,7 +238,7 @@ export function GamePlayer({ game }: { game: GameWithStats }) {
   };
 
   return (
-    <div className="av-player fade-in">
+    <div className="av-player fade-in" data-skin={skin}>
       <div className="player-hud">
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
           <div className="hud-stat">
@@ -225,6 +261,21 @@ export function GamePlayer({ game }: { game: GameWithStats }) {
           </div>
         </div>
         <div className="hud-actions">
+          {/* Siempre visible: el chrome cambia de piel tenga o no motor el
+              juego, así que el selector no depende de `entry`. */}
+          <div className="skin-select" role="group" aria-label="Piel del reproductor">
+            {SKIN_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                className={"chip" + (skin === option.value ? " active" : "")}
+                aria-pressed={skin === option.value}
+                onClick={() => changeSkin(option.value)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
           {/* Solo los juegos que suenan enseñan el interruptor. En los demás
               sería un control que no hace nada. */}
           {entry?.audio && (
@@ -250,6 +301,7 @@ export function GamePlayer({ game }: { game: GameWithStats }) {
             <GameCanvas
               entry={entry}
               title={game.title}
+              skin={skin}
               onSnapshot={onSnapshot}
               onGameOver={openGameOver}
               onReady={onReady}

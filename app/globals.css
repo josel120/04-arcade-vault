@@ -22,6 +22,50 @@
   --mono: var(--font-jetbrains-mono), var(--font-courier-prime), "Courier New", monospace;
 }
 
+/*
+ * ===== pieles del reproductor =====
+ * `data-skin` vive en `.av-player` (ver `components/game-player.tsx`) y
+ * redefine los mismos tokens de arriba: todo lo que ya pinta con `var(--bg)`,
+ * `var(--cyan)`… se repinta solo, sin una regla más. `"clasico"` no tiene
+ * bloque propio: es no tocar nada, porque es exactamente el `:root` de arriba.
+ *
+ * `--line`/`--line-2` (los hairlines del bezel y las tarjetas) también se
+ * redefinen aquí, derivados del cian/blanco de cada piel en vez de fijos al
+ * cian de CLÁSICO.
+ */
+[data-skin="retro"] {
+  /* Fósforo ámbar envejecido: negro cálido en vez de azulado, acentos que
+     vira como los tubos viejos —el rojo se quema a naranja, el brillo baja. */
+  --bg: #100b06;
+  --bg-2: #180f08;
+  --bg-3: #20150c;
+  --ink: #e8dcc0;
+  --ink-dim: #a89a78;
+  --ink-faint: #5c5138;
+  --cyan: #33c2a8;
+  --magenta: #d9622b;
+  --yellow: #e0a530;
+  --green: #7a9c3f;
+  --line: rgba(224, 165, 48, 0.16);
+  --line-2: rgba(232, 220, 192, 0.06);
+}
+[data-skin="neon"] {
+  /* Un paso más saturado que CLÁSICO, no otra familia: negro casi puro y más
+     glow, dirección vaporwave/escaparate. */
+  --bg: #060608;
+  --bg-2: #0a0a10;
+  --bg-3: #101018;
+  --ink: #f2f4ff;
+  --ink-dim: #9aa0d9;
+  --ink-faint: #55598c;
+  --cyan: #00fff2;
+  --magenta: #ff2fd6;
+  --yellow: #faff3c;
+  --green: #14ffb0;
+  --line: rgba(0, 255, 242, 0.22);
+  --line-2: rgba(255, 255, 255, 0.08);
+}
+
 /* Tokens exposed to Tailwind utilities: bg-bg-2, text-ink-dim, border-line, font-pixel… */
 @theme inline {
   --color-bg: var(--bg);
@@ -1225,6 +1269,14 @@ a {
   /* Con el interruptor de sonido son cuatro botones, y en una pantalla
      estrecha el cuarto no cabe. Con tres no cambia nada. */
   flex-wrap: wrap;
+  /* El selector de piel entra en la misma fila y también envuelve. */
+  align-items: center;
+}
+/* Reutiliza `.chip`/`.chip.active` de los filtros de la Biblioteca: mismo
+   lenguaje visual para "elegir una entre varias", más compacto que `.btn`. */
+.skin-select {
+  display: flex;
+  gap: 6px;
 }
 
 .crt {
