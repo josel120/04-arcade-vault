@@ -1,6 +1,6 @@
 # SPEC 16 — Login y registro en pantallas propias, OAuth real y recuperación de contraseña
 
-> **Estado:** Approved
+> **Estado:** Implementado
 > **Depende de:** SPEC 04
 > **Fecha:** 2026-08-25
 > **Objetivo:** Separar `/auth` en `/login` y `/registro`, activar de verdad los botones GOOGLE y GITHUB, y añadir recuperación de contraseña por correo — las tres cosas que la SPEC 04 dejó explícitamente fuera.
