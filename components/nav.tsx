@@ -17,7 +17,7 @@ export function Nav() {
     pathname === "/games" || pathname.startsWith("/juego") || pathname.startsWith("/jugar");
   const salonActive = pathname === "/salon";
   const aboutActive = pathname === "/about";
-  const authActive = pathname === "/auth";
+  const authActive = pathname === "/login" || pathname === "/registro";
 
   const close = () => setOpen(false);
 
@@ -54,7 +54,7 @@ export function Nav() {
             {user.name} ▾
           </button>
         ) : (
-          <Link className="btn auth-btn" href="/auth">
+          <Link className="btn auth-btn" href="/login">
             Iniciar Sesión
           </Link>
         )}
@@ -89,7 +89,7 @@ export function Nav() {
         <Link className={aboutActive ? "active" : ""} href="/about" onClick={close}>
           Acerca de
         </Link>
-        <Link className={authActive ? "active" : ""} href="/auth" onClick={close}>
+        <Link className={authActive ? "active" : ""} href="/login" onClick={close}>
           {user ? "Cuenta" : "Iniciar Sesión"}
         </Link>
         <div style={{ flex: 1 }} />

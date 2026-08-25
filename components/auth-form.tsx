@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 
 import { useSession } from "@/components/session-provider";
 import {
@@ -13,8 +13,9 @@ import {
 import { guestUser } from "@/lib/session";
 import { createClient } from "@/lib/supabase/client";
 
-type Tab = "in" | "up";
+export type AuthMode = "login" | "signup";
 type Status = "idle" | "loading" | "error";
+type Provider = "google" | "github";
 
 /** Alias de las sesiones locales sin cuenta. */
 const GUEST_NAME = "INVITADO";
@@ -63,25 +64,26 @@ function mapAuthError(error: { code?: string; message?: string } | null): AuthEr
   return "network";
 }
 
-export function AuthForm() {
+type AuthFormProps = {
+  mode: AuthMode;
+  /** Motivo de error ya conocido al montar, p. ej. `?error=oauth_failed`. */
+  initialError?: AuthError | null;
+  /** Enlaces propios de cada pantalla (recuperación, cruce login↔registro). */
+  footer?: ReactNode;
+};
+
+export function AuthForm({ mode, initialError = null, footer }: AuthFormProps) {
   const router = useRouter();
   const { signIn } = useSession();
 
-  const [tab, setTab] = useState<Tab>("in");
   const [name, setName] = useState("");
   const [pass, setPass] = useState("");
   const [email, setEmail] = useState("");
 
-  const [status, setStatus] = useState<Status>("idle");
-  const [error, setError] = useState<AuthError | null>(null);
+  const [status, setStatus] = useState<Status>(initialError ? "error" : "idle");
+  const [error, setError] = useState<AuthError | null>(initialError);
 
   const loading = status === "loading";
-
-  const switchTab = (next: Tab) => {
-    setTab(next);
-    setStatus("idle");
-    setError(null);
-  };
 
   const fail = (reason: AuthError) => {
     setError(reason);
@@ -102,7 +104,7 @@ export function AuthForm() {
     setStatus("loading");
 
     try {
-      if (tab === "up") {
+      if (mode === "signup") {
         // El alias es obligatorio al registrarse: sin el, el perfil no existe.
         if (validateUsername(name)) {
           fail("username_format");
@@ -167,6 +169,30 @@ export function AuthForm() {
     router.push("/");
   };
 
+  const withProvider = async (provider: Provider) => {
+    if (loading) return;
+
+    const supabase = createClient();
+    if (!supabase) {
+      fail("config");
+      return;
+    }
+
+    setError(null);
+    setStatus("loading");
+
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: `${window.location.origin}/login/callback` },
+    });
+
+    // Si no hay error, el navegador ya está saliendo hacia el proveedor: no
+    // hace falta volver a `idle`, la pantalla desaparece.
+    if (oauthError) {
+      fail("oauth_failed");
+    }
+  };
+
   return (
     <div className="av-auth-wrap fade-in">
       <div className="auth-card">
@@ -186,27 +212,8 @@ export function AuthForm() {
           </div>
         </div>
 
-        <div className="auth-tabs">
-          <button
-            type="button"
-            className={tab === "in" ? "on" : ""}
-            onClick={() => switchTab("in")}
-            aria-pressed={tab === "in"}
-          >
-            INICIAR SESIÓN
-          </button>
-          <button
-            type="button"
-            className={tab === "up" ? "on" : ""}
-            onClick={() => switchTab("up")}
-            aria-pressed={tab === "up"}
-          >
-            CREAR CUENTA
-          </button>
-        </div>
-
         <form onSubmit={submit}>
-          {tab === "up" && (
+          {mode === "signup" && (
             <div className="field slide-in">
               <label htmlFor="auth-user">Usuario</label>
               <input
@@ -239,7 +246,7 @@ export function AuthForm() {
               value={pass}
               onChange={(event) => setPass(event.target.value)}
               placeholder="••••••••"
-              autoComplete={tab === "in" ? "current-password" : "new-password"}
+              autoComplete={mode === "login" ? "current-password" : "new-password"}
               required
             />
           </div>
@@ -250,7 +257,7 @@ export function AuthForm() {
             disabled={loading}
             style={{ width: "100%", marginTop: 8 }}
           >
-            {loading ? "◌ CONECTANDO…" : tab === "in" ? "ENTRAR AL VAULT" : "CREAR Y JUGAR"}
+            {loading ? "◌ CONECTANDO…" : mode === "login" ? "ENTRAR AL VAULT" : "CREAR Y JUGAR"}
           </button>
 
           {error && (
@@ -271,13 +278,25 @@ export function AuthForm() {
 
         <div className="auth-divider">O CONTINÚA CON</div>
         <div className="social">
-          <button className="btn ghost" type="button">
+          <button
+            className="btn ghost"
+            type="button"
+            disabled={loading}
+            onClick={() => void withProvider("google")}
+          >
             ◆ GOOGLE
           </button>
-          <button className="btn ghost" type="button">
+          <button
+            className="btn ghost"
+            type="button"
+            disabled={loading}
+            onClick={() => void withProvider("github")}
+          >
             ▣ GITHUB
           </button>
         </div>
+
+        {footer && <div className="auth-links">{footer}</div>}
 
         <div
           style={{

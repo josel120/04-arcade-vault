@@ -34,8 +34,8 @@ export function validateUsername(name: string): "format" | null {
 }
 
 /**
- * Los siete motivos de fallo del acceso. Cada uno lleva a un texto distinto en
- * la banda de error, porque «no ha funcionado» no le sirve a nadie:
+ * Los motivos de fallo del acceso. Cada uno lleva a un texto distinto en la
+ * banda de error, porque «no ha funcionado» no le sirve a nadie:
  *
  * - `credentials`     el correo o la contraseña no cuadran.
  * - `username_taken`  el alias ya existe. Incluye el caso en que lo detecta el
@@ -48,6 +48,10 @@ export function validateUsername(name: string): "format" | null {
  * - `config`          faltan las variables de entorno. No es culpa de quien
  *                     entra, y tiene que verse en vez de fallar en silencio.
  * - `network`         no se pudo hablar con Supabase.
+ * - `oauth_failed`    Supabase rechazó el intercambio de código en
+ *                     `/login/callback`.
+ * - `expired_link`    el enlace de recuperación de contraseña ya no tiene una
+ *                     sesión de recuperación válida.
  *
  * Los dos motivos de correo no estaban en el §3 de la SPEC 04, que listaba
  * siete. Se añadieron al implementar: sin ellos, registrarse con un correo ya
@@ -55,6 +59,9 @@ export function validateUsername(name: string): "format" | null {
  * confirmar no mostraba nada que explicara por qué no se entraba.
  * `email_unconfirmed` desaparece de la práctica en cuanto el panel tenga
  * *Confirm email* desactivado, como pide el paso 2 del plan.
+ *
+ * `oauth_failed` y `expired_link` los añade la SPEC 16 junto con OAuth y la
+ * recuperación de contraseña.
  */
 export type AuthError =
   | "credentials"
@@ -65,7 +72,9 @@ export type AuthError =
   | "email_unconfirmed"
   | "weak_password"
   | "config"
-  | "network";
+  | "network"
+  | "oauth_failed"
+  | "expired_link";
 
 /** Texto retro que se pinta en la banda de error, uno por motivo. */
 export const AUTH_ERROR_TEXT: Record<AuthError, string> = {
@@ -78,4 +87,6 @@ export const AUTH_ERROR_TEXT: Record<AuthError, string> = {
   weak_password: "CONTRASEÑA DEMASIADO CORTA",
   config: "SUPABASE NO CONFIGURADO",
   network: "SIN CONEXIÓN",
+  oauth_failed: "NO SE PUDO COMPLETAR EL ACCESO CON EL PROVEEDOR",
+  expired_link: "ENLACE CADUCADO O YA UTILIZADO",
 };

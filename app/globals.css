@@ -1659,28 +1659,6 @@ a {
   font-size: 16px;
   letter-spacing: 0.1em;
 }
-.auth-tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-  margin: 18px 0;
-  border: 1px solid var(--line);
-}
-.auth-tabs button {
-  padding: 12px;
-  font-family: var(--pixel);
-  font-size: 9px;
-  letter-spacing: 0.14em;
-  background: transparent;
-  border: 0;
-  color: var(--ink-dim);
-  cursor: pointer;
-}
-.auth-tabs button.on {
-  background: rgba(0, 245, 255, 0.08);
-  color: var(--cyan);
-  text-shadow: 0 0 6px rgba(0, 245, 255, 0.5);
-}
 .field {
   display: flex;
   flex-direction: column;
@@ -1734,6 +1712,32 @@ a {
 .social .btn {
   padding: 12px;
   font-size: 9px;
+}
+
+/* Enlaces de texto propios de cada pantalla de acceso (SPEC 16): recuperar
+   contraseña, alternar login/registro, volver desde recuperar. Mismo tono
+   apagado que `.auth-divider`, sin sus líneas laterales. */
+.auth-links {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+  text-align: center;
+}
+.auth-links a {
+  color: var(--cyan);
+}
+.auth-links a:focus-visible {
+  outline: 1px solid var(--cyan);
+  outline-offset: 2px;
+}
+.auth-switch {
+  color: var(--ink-faint);
 }
 
 /* ===== salón ===== */

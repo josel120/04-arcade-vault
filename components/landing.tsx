@@ -45,7 +45,7 @@ export function Landing({ games }: { games: Game[] }) {
             <Link className="btn xl pulse" href="/games">
               ▶ EXPLORAR JUEGOS
             </Link>
-            <Link className="btn xl magenta" href="/auth">
+            <Link className="btn xl magenta" href="/login">
               ✦ CREAR CUENTA
             </Link>
           </div>
@@ -191,7 +191,7 @@ export function Landing({ games }: { games: Game[] }) {
               ))}
             </ul>
 
-            <Link className="btn xl pulse" style={{ width: "100%" }} href="/auth">
+            <Link className="btn xl pulse" style={{ width: "100%" }} href="/login">
               EMPEZAR GRATIS →
             </Link>
 

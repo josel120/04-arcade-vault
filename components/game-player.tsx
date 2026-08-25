@@ -402,7 +402,7 @@ export function GamePlayer({ game }: { game: GameWithStats }) {
                 {!isAccount && (
                   <p className="guest-note">
                     Juegas como invitado: esta marca se queda en este navegador.{" "}
-                    <Link href="/auth">Crea una cuenta</Link> para competir en el marcador.
+                    <Link href="/login">Crea una cuenta</Link> para competir en el marcador.
                   </p>
                 )}
                 {saveError && (
