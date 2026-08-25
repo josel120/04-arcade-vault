@@ -1,0 +1,74 @@
+- generic [active] [ref=f22e1]:
+  - generic [ref=f22e2]:
+    - navigation [ref=f22e3]:
+      - link "ARCADE VAULT" [ref=f22e4] [cursor=pointer]:
+        - /url: /
+      - generic [ref=f22e7]:
+        - link "Inicio" [ref=f22e8] [cursor=pointer]:
+          - /url: /
+        - link "Juegos" [ref=f22e9] [cursor=pointer]:
+          - /url: /games
+        - link "Salón de la Fama" [ref=f22e10] [cursor=pointer]:
+          - /url: /salon
+        - link "Acerca de" [ref=f22e11] [cursor=pointer]:
+          - /url: /about
+      - generic [ref=f22e12]: CRÉDITOS · 03
+      - link "Iniciar Sesión" [ref=f22e15] [cursor=pointer]:
+        - /url: /auth
+    - complementary [ref=f22e16]:
+      - generic [ref=f22e17]: MENÚ
+      - link "Inicio" [ref=f22e18] [cursor=pointer]:
+        - /url: /
+      - link "Juegos" [ref=f22e19] [cursor=pointer]:
+        - /url: /games
+      - link "Salón de la Fama" [ref=f22e20] [cursor=pointer]:
+        - /url: /salon
+      - link "Acerca de" [ref=f22e21] [cursor=pointer]:
+        - /url: /about
+      - link "Iniciar Sesión" [ref=f22e22] [cursor=pointer]:
+        - /url: /auth
+      - generic [ref=f22e24]: CRÉDITOS · 03
+    - main [ref=f22e25]:
+      - generic [ref=f22e26]:
+        - generic [ref=f22e27]:
+          - generic [ref=f22e28]:
+            - generic [ref=f22e29]:
+              - generic [ref=f22e30]: Jugador
+              - generic [ref=f22e31]: INVITADO
+            - generic [ref=f22e32]:
+              - generic [ref=f22e33]: Puntuación
+              - generic [ref=f22e34]: "0"
+            - generic [ref=f22e35]:
+              - generic [ref=f22e36]: Vidas
+              - generic [ref=f22e37]: ♥ ♥ ♥
+            - generic [ref=f22e38]:
+              - generic [ref=f22e39]: Nivel
+              - generic [ref=f22e40]: "01"
+          - generic [ref=f22e41]:
+            - group "Piel del reproductor" [ref=f22e42]:
+              - button "CLÁSICO" [pressed] [ref=f22e43] [cursor=pointer]
+              - button "RETRO" [ref=f22e44] [cursor=pointer]
+              - button "NEÓN" [ref=f22e45] [cursor=pointer]
+            - button "SONIDO" [ref=f22e46] [cursor=pointer]
+            - button "PAUSA" [ref=f22e47] [cursor=pointer]
+            - button "FIN" [ref=f22e48] [cursor=pointer]
+            - link "SALIR" [ref=f22e49] [cursor=pointer]:
+              - /url: /juego/vibora
+        - generic [ref=f22e50]:
+          - generic "Partida de VÍBORA" [ref=f22e52]
+          - generic [ref=f22e53]:
+            - generic [ref=f22e54]: SEÑAL OK
+            - generic [ref=f22e55]: VÍBORA · CRT-83 · 60 HZ
+            - generic [ref=f22e56]: CARGA · 1MB
+        - generic [ref=f22e57]:
+          - generic [ref=f22e58]:
+            - generic [ref=f22e59]: ◄
+            - generic [ref=f22e60]: ▲
+            - generic [ref=f22e61]: ►
+            - generic [ref=f22e62]: ▼
+            - text: Mover
+          - generic [ref=f22e63]:
+            - generic [ref=f22e64]: P
+            - text: Pausa
+    - contentinfo [ref=f22e65]: © 2026 ARCADE VAULT · HECHO CON PIXELES Y NEÓN · v2.6.0
+  - button "Open Next.js Dev Tools" [ref=f22e71] [cursor=pointer]

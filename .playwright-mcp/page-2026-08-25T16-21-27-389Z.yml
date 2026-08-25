@@ -1,0 +1,81 @@
+- generic [active] [ref=f23e1]:
+  - generic [ref=f23e2]:
+    - navigation [ref=f23e3]:
+      - link "ARCADE VAULT" [ref=f23e4] [cursor=pointer]:
+        - /url: /
+      - generic [ref=f23e7]:
+        - link "Inicio" [ref=f23e8] [cursor=pointer]:
+          - /url: /
+        - link "Juegos" [ref=f23e9] [cursor=pointer]:
+          - /url: /games
+        - link "Salón de la Fama" [ref=f23e10] [cursor=pointer]:
+          - /url: /salon
+        - link "Acerca de" [ref=f23e11] [cursor=pointer]:
+          - /url: /about
+      - generic [ref=f23e12]: CRÉDITOS · 03
+      - link "Iniciar Sesión" [ref=f23e15] [cursor=pointer]:
+        - /url: /auth
+    - complementary [ref=f23e16]:
+      - generic [ref=f23e17]: MENÚ
+      - link "Inicio" [ref=f23e18] [cursor=pointer]:
+        - /url: /
+      - link "Juegos" [ref=f23e19] [cursor=pointer]:
+        - /url: /games
+      - link "Salón de la Fama" [ref=f23e20] [cursor=pointer]:
+        - /url: /salon
+      - link "Acerca de" [ref=f23e21] [cursor=pointer]:
+        - /url: /about
+      - link "Iniciar Sesión" [ref=f23e22] [cursor=pointer]:
+        - /url: /auth
+      - generic [ref=f23e24]: CRÉDITOS · 03
+    - main [ref=f23e25]:
+      - generic [ref=f23e26]:
+        - generic [ref=f23e27]:
+          - generic [ref=f23e28]:
+            - generic [ref=f23e29]:
+              - generic [ref=f23e30]: Jugador
+              - generic [ref=f23e31]: INVITADO
+            - generic [ref=f23e32]:
+              - generic [ref=f23e33]: Puntuación
+              - generic [ref=f23e34]: "0"
+            - generic [ref=f23e35]:
+              - generic [ref=f23e36]: Vidas
+              - generic [ref=f23e37]: ♥ ♥ ♥
+            - generic [ref=f23e38]:
+              - generic [ref=f23e39]: Nivel
+              - generic [ref=f23e40]: "01"
+          - generic [ref=f23e41]:
+            - group "Piel del reproductor" [ref=f23e42]:
+              - button "CLÁSICO" [pressed] [ref=f23e43] [cursor=pointer]
+              - button "RETRO" [ref=f23e44] [cursor=pointer]
+              - button "NEÓN" [ref=f23e45] [cursor=pointer]
+            - button "PAUSA" [ref=f23e46] [cursor=pointer]
+            - button "FIN" [ref=f23e47] [cursor=pointer]
+            - link "SALIR" [ref=f23e48] [cursor=pointer]:
+              - /url: /juego/tetris
+        - generic [ref=f23e49]:
+          - generic "Partida de TETRIS" [ref=f23e51]
+          - generic [ref=f23e52]:
+            - generic [ref=f23e53]: SEÑAL OK
+            - generic [ref=f23e54]: TETRIS · CRT-83 · 60 HZ
+            - generic [ref=f23e55]: CARGA · 1MB
+        - generic [ref=f23e56]:
+          - generic [ref=f23e57]:
+            - generic [ref=f23e58]: ◄
+            - generic [ref=f23e59]: ►
+            - text: Mover
+          - generic [ref=f23e60]:
+            - generic [ref=f23e61]: ▲
+            - generic [ref=f23e62]: X
+            - text: Rotar
+          - generic [ref=f23e63]:
+            - generic [ref=f23e64]: ▼
+            - text: Bajar
+          - generic [ref=f23e65]:
+            - generic [ref=f23e66]: Espacio
+            - text: Soltar
+          - generic [ref=f23e67]:
+            - generic [ref=f23e68]: P
+            - text: Pausa
+    - contentinfo [ref=f23e69]: © 2026 ARCADE VAULT · HECHO CON PIXELES Y NEÓN · v2.6.0
+  - button "Open Next.js Dev Tools" [ref=f23e75] [cursor=pointer]
