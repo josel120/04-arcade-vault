@@ -2,7 +2,7 @@
 
 Una plataforma para jugar a recreativas online y competir por la mayor puntuación.
 
-Doce juegos en el catálogo, cuatro de ellos jugables de verdad, un marcador respaldado por Supabase y una estética CRT hecha entera con CSS: no hay ni una imagen de portada en todo el proyecto.
+Trece juegos en el catálogo, cinco de ellos jugables de verdad, un marcador respaldado por Supabase y una estética CRT hecha entera con CSS: no hay ni una imagen de portada en todo el proyecto.
 
 ## Estado
 
@@ -12,6 +12,7 @@ Doce juegos en el catálogo, cuatro de ellos jugables de verdad, un marcador res
 | **TETRIS**     | Jugable | Portado de `references/started-games/03-tetris/`                           |
 | **ARKANOID**   | Jugable | Portado de `references/started-games/04-arkanoid/` — con sonido            |
 | **VÍBORA**     | Jugable | Escrito desde cero en TypeScript — sonido sintetizado con WebAudio         |
+| **FROGGER**    | Jugable | Escrito desde cero — diseñado por el agente `game-jam`                     |
 | Los otros ocho | Maqueta | Ficha, portada y marcador reales; el reproductor cae a la arena decorativa |
 
 Toda la plataforma es pública: se puede jugar sin cuenta. Iniciar sesión sirve para que la puntuación entre en el marcador global en vez de quedarse en el navegador.
@@ -88,7 +89,7 @@ El corazón es `lib/games/engine.ts`: el contrato entre el reproductor y un moto
 
 ## Spec Driven Design
 
-El proyecto se construye con **Spec Driven Design**: cada funcionalidad se define primero como una spec en `specs/`, se implementa en su propia rama `spec-NN-slug` y se integra por PR. Las diez specs actuales, de la maqueta inicial a VÍBORA, están en `specs/` y son el mejor sitio para entender por qué algo está hecho como está.
+El proyecto se construye con **Spec Driven Design**: cada funcionalidad se define primero como una spec en `specs/`, se implementa en su propia rama `spec-NN-slug` y se integra por PR. Las specs 01 a 10, de la maqueta inicial a VÍBORA, están `Implementado`; las specs 11 a 15 son auditorías de rendimiento por motor, todavía en `Draft` y a la espera de una pasada de `/spec-impl`. `specs/game-jam/<id>/` guarda además, sin numerar, el par `spec-diseno.md` + `spec-implementacion.md` que escribe el agente `game-jam` para un juego antes de tener ficha de catálogo — así nació FROGGER.
 
 Sigue las buenas prácticas de [Klerith/fernando-skills](https://github.com/Klerith/fernando-skills), con las skills `/spec` y `/spec-impl`:
 
@@ -97,3 +98,13 @@ npx skills@latest add Klerith/fernando-skills
 ```
 
 El repo lleva además dos skills propias o instaladas aparte: `/frontend-design` (de `anthropics/skills`) para el diseño de interfaz, y `/nuevo-juego`, la receta destilada de las specs 05 a 10 para añadir un juego jugable de punta a punta. `skills-lock.json` fija las versiones.
+
+## Agentes
+
+Cinco subagentes de proyecto, en `.claude/agents/`:
+
+- **`game-planner`** — decide qué juego entra a continuación en el catálogo. Solo planifica; su memoria entre sesiones es `references/game-suggestions-todo.md`.
+- **`game-jam`** — dado un tema, diseña un juego nuevo de punta a punta sin construirlo: escribe `specs/game-jam/<id>/spec-diseno.md` + `spec-implementacion.md`.
+- **`skin-designer`** — el único que implementa directamente: construye y audita el sistema de tres pieles (clásico/retro/neón) en todo el catálogo.
+- **`mobile-porter`** — audita y corrige la experiencia en pantallas estrechas y con puntero táctil, recorriendo el sitio con Playwright.
+- **`game-performance-booster`** — audita el rendimiento de los cinco motores reales y entrega los hallazgos como spec nueva en `specs/`, sin tocar código.

@@ -33,9 +33,9 @@ export type GameAction = "left" | "right" | "thrust" | "fire" | "down";
 
 /**
  * Piel del reproductor: el chrome (marco CRT, HUD, botones) responde a las
- * tres en los doce juegos por igual, vía `data-skin` en `.av-player`. La
+ * tres en los trece juegos por igual, vía `data-skin` en `.av-player`. La
  * paleta que cada motor dibuja dentro de su lienzo es aparte —la reciben por
- * `setSkin`— y solo la migran los cuatro juegos con motor real, uno a uno.
+ * `setSkin`— y solo la migran los cinco juegos con motor real, uno a uno.
  *
  * `"clasico"` es el valor por defecto y, por definición, el `:root` de
  * siempre: no tiene bloque propio en `app/globals.css`.
