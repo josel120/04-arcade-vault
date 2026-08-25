@@ -197,7 +197,12 @@ a {
 .pixel {
   font-family: var(--pixel);
   letter-spacing: 0.04em;
-  line-height: 1.25;
+  /* "Press Start 2P" pinta sus glifos más altos que su caja de línea: a
+     1.25 (más ajustado aún que el 1.5 del body) cualquier etiqueta de esta
+     clase que envolviera a más de una línea en móvil —preguntas del FAQ,
+     nombres de plan, unidades de estadística— se pisaba con la línea
+     siguiente. En una sola línea (la mayoría de usos) el cambio no se nota. */
+  line-height: 1.8;
   text-transform: uppercase;
 }
 .mono {
@@ -354,6 +359,12 @@ a {
   .av-nav .coin-counter {
     display: none;
   }
+  /* El panel deslizante ya trae "Cuenta"/"Iniciar Sesión" al fondo: mantener
+     el botón aquí además de la hamburguesa desbordaba la barra en móviles
+     estrechos (390px) y empujaba la hamburguesa fuera del viewport. */
+  .av-nav .auth-btn {
+    display: none;
+  }
   .av-nav .hamburger {
     display: inline-flex;
   }
@@ -505,6 +516,9 @@ a {
 .av-hero h1 {
   font-family: var(--pixel);
   font-size: clamp(28px, 6vw, 64px);
+  /* Mismo motivo que `.home-title`/`.about-title`: sin esto, "ARCADE VAULT"
+     envuelto a dos líneas en móvil se pisaba consigo mismo. */
+  line-height: 1.8;
   letter-spacing: 0.06em;
   margin: 0;
   background: linear-gradient(180deg, #fff 0%, var(--cyan) 60%, var(--magenta) 110%);
@@ -1083,6 +1097,66 @@ a {
     repeating-linear-gradient(180deg, rgba(2, 12, 7, 0.5) 0 1px, transparent 1px 14.286%);
 }
 
+/* FROGGER. Comparte tema con RANARIA (su gemela de maqueta — ver spec-diseno
+   §6): para separarse de ella a tamaño de miniatura sin leer el título, esta
+   portada no es un único círculo sobre ondas, es el instante exacto del salto
+   — la rana magenta congelada en el aire, con un rastro de dos ecos apagados
+   detrás, justo en la costura entre el río (arriba, frío) y la calzada
+   (abajo, cálida y con carriles). Las tres bocas de meta, el tronco del río y
+   los dos vehículos de la calzada están presentes, así que a esta escala ya
+   se lee "cruce", no "estanque". El acento es magenta, no el verde de
+   RANARIA y VÍBORA.
+   Ningún comentario va dentro de un valor: eso ya tumbó la hoja una vez. */
+.cover-frogger {
+  background: linear-gradient(180deg, #0a1f2e 0%, #0c0518 52%, #1a0a12 100%);
+}
+/* Las tres franjas del recorrido: metas arriba, río, y calzada abajo, con sus
+   ocupantes fijos — tres nenúfares, un tronco, dos vehículos. */
+.cover-frogger::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 50%, var(--green) 0 32%, transparent 60%) 15% 9% / 13% 15%
+      no-repeat,
+    radial-gradient(circle at 50% 50%, var(--green) 0 32%, transparent 60%) 50% 9% / 13% 15%
+      no-repeat,
+    radial-gradient(circle at 50% 50%, var(--green) 0 32%, transparent 60%) 85% 9% / 13% 15%
+      no-repeat,
+    repeating-linear-gradient(90deg, rgba(0, 245, 255, 0.2) 0 7%, transparent 7% 15%) 0 30% / 100%
+      3% no-repeat,
+    repeating-linear-gradient(90deg, rgba(0, 245, 255, 0.14) 4% 10%, transparent 10% 18%) 0 42% /
+      100% 3% no-repeat,
+    linear-gradient(#5a3a1f, #3e2712) 30% 44% / 24% 8% no-repeat,
+    repeating-linear-gradient(90deg, var(--yellow) 0 9%, transparent 9% 22%) 0 88% / 100% 3%
+      no-repeat,
+    linear-gradient(var(--cyan), #0090a0) 10% 75% / 16% 9% no-repeat,
+    linear-gradient(#f5ff00, #a08000) 64% 76% / 22% 8% no-repeat;
+  opacity: 0.92;
+}
+/* La rana, congelada en mitad del salto sobre la costura río/calzada, con dos
+   ecos apagados detrás que marcan de dónde viene. Es la única pieza que
+   "se mueve" en la lectura de la tarjeta, aunque la imagen esté quieta. */
+.cover-frogger::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 0, 110, 0.22) 0 55%, transparent 70%) 38% 57% / 11%
+      10% no-repeat,
+    radial-gradient(circle at 50% 50%, rgba(255, 0, 110, 0.34) 0 55%, transparent 70%) 42% 55% / 11%
+      10% no-repeat,
+    radial-gradient(
+        circle at 50% 42%,
+        #ffffff 0 16%,
+        var(--magenta) 34%,
+        #b3004d 62%,
+        transparent 74%
+      )
+      46% 52% / 15% 13% no-repeat;
+  filter: drop-shadow(0 0 9px rgba(255, 0, 110, 0.55));
+}
+
 /* ===== detail screen ===== */
 .av-detail {
   display: grid;
@@ -1502,6 +1576,18 @@ a {
   margin-top: 18px;
   flex-wrap: wrap;
 }
+/* A 390px el campo de iniciales se aplastaba a la fuerza para dejarle sitio
+   a "GUARDAR PUNTUACIÓN", que ni así cabía y quedaba cortado por el borde
+   del modal. Apilar campo y botón es el mismo patrón que ya usan las tarjetas
+   de precio y el resto de grillas en este breakpoint. */
+@media (max-width: 520px) {
+  .modal .input-row {
+    flex-direction: column;
+  }
+  .modal .input-row button {
+    width: 100%;
+  }
+}
 .toast-saved {
   font-family: var(--pixel);
   font-size: 11px;
@@ -1663,6 +1749,10 @@ a {
 .hall-head h1 {
   font-family: var(--pixel);
   font-size: clamp(24px, 4.5vw, 44px);
+  /* "Press Start 2P" dibuja sus glifos más altos que su caja de línea
+     nominal: con el `line-height: 1.5` heredado del body, el título envuelto
+     a dos líneas en móvil se pisaba con el subtítulo de debajo. */
+  line-height: 1.7;
   letter-spacing: 0.08em;
   margin: 0;
   background: linear-gradient(180deg, var(--yellow), var(--magenta));
@@ -1673,7 +1763,10 @@ a {
 }
 .hall-head p {
   color: var(--ink-dim);
-  margin: 12px 0 0;
+  /* El título tiene un `drop-shadow` de 14px de radio: con solo 12px de
+     margen, su halo se leía encima de la primera línea del subtítulo en
+     cuanto el título envolvía a dos líneas (móvil). */
+  margin: 50px 0 0;
   letter-spacing: 0.1em;
 }
 
@@ -1997,7 +2090,11 @@ a {
   margin: 0;
   font-family: var(--pixel);
   font-size: clamp(32px, 7vw, 88px);
-  line-height: 1.05;
+  /* "Press Start 2P" pinta sus glifos bastante más altos que su caja de
+     línea nominal (mismo motivo que los demás títulos de este archivo): a
+     1.05 las tres líneas se pisaban entre sí en cualquier ancho, no solo en
+     móvil — se comprobó también a 1280px. */
+  line-height: 1.8;
   letter-spacing: 0.04em;
   display: flex;
   flex-direction: column;
@@ -2668,8 +2765,13 @@ a {
     grid-template-columns: 1fr;
   }
 }
+/* `min-width: 0`: sin él, el item de grid no se encoge por debajo del
+   contenido de `.pc-list`, y en la columna única de móvil la tarjeta se salía
+   del viewport en vez de ajustarse a su ancho. Mismo motivo que
+   `.activity-card`/`.contact-form` más arriba. */
 .price-card {
   position: relative;
+  min-width: 0;
   background: linear-gradient(180deg, var(--bg-2), #0a0e16);
   border: 1px solid var(--green);
   padding: 32px 28px;
@@ -2723,6 +2825,9 @@ a {
 .pc-tag {
   font-family: var(--pixel);
   font-size: 9px;
+  /* No lleva la clase `.pixel`, así que no hereda su `line-height` — a
+     390px este texto envuelve a dos líneas y se pisaban sin esto. */
+  line-height: 1.8;
   letter-spacing: 0.18em;
   color: var(--yellow);
   text-shadow: 0 0 6px rgba(245, 255, 0, 0.45);
@@ -2770,6 +2875,16 @@ a {
     0 0 14px rgba(255, 0, 110, 0.35),
     inset 0 0 8px rgba(255, 0, 110, 0.2);
   z-index: 3;
+}
+/* En dos columnas el sello sobresale del margen que le deja la rejilla; en
+   una sola columna (`.pricing-grid` arriba) la tarjeta ocupa casi todo el
+   ancho de la pantalla y ese mismo saliente empujaba el documento entero a
+   desbordar por la derecha. */
+@media (max-width: 900px) {
+  .pc-stamp {
+    top: 10px;
+    right: 10px;
+  }
 }
 
 .pricing-faq {
@@ -2821,6 +2936,10 @@ a {
 .about-title {
   font-family: var(--pixel);
   font-size: clamp(26px, 5vw, 52px);
+  /* Mismo ajuste que `.hall-head h1`: "Press Start 2P" pinta sus glifos más
+     altos que su caja de línea, y en móvil este título envuelve a cuatro
+     líneas — con el `line-height: 1.5` heredado se pisaban entre sí. */
+  line-height: 1.85;
   letter-spacing: 0.06em;
   margin: 0;
   background: linear-gradient(180deg, #fff, var(--cyan) 80%);
@@ -2885,7 +3004,10 @@ a {
 .highlight .hl-text {
   font-size: 10px;
   letter-spacing: 0.1em;
-  line-height: 1.5;
+  /* Igual que los títulos grandes: "Press Start 2P" pinta más alto que su
+     caja de línea, y esta etiqueta envuelve a 2-3 líneas en las tarjetas
+     angostas de móvil, así que 1.5 no bastaba para no pisarse. */
+  line-height: 1.8;
   color: var(--ink);
   text-shadow: none;
 }
@@ -2945,6 +3067,15 @@ a {
     gap: 24px;
   }
 }
+/* `min-width: 0` para que cada mitad pueda encogerse por debajo de su
+   contenido: sin esto, un item de grid nunca se encoge más allá del ancho
+   intrínseco de lo que hay dentro (aquí, la columna de "tips" estirada por
+   flex), y a 414px el formulario entero se salía por la derecha en vez de
+   ajustarse. Mismo motivo que ya arregló `.activity-card`. */
+.contact-intro,
+.contact-form {
+  min-width: 0;
+}
 .contact-intro .kicker {
   font-size: 11px;
   letter-spacing: 0.24em;
@@ -2952,11 +3083,17 @@ a {
 }
 .contact-title {
   font-family: var(--pixel);
-  font-size: clamp(22px, 3.5vw, 36px);
+  /* El mínimo baja hasta 17px (antes 22px, fijo por debajo de los ~630px):
+     "CONTÁCTANOS" es una sola palabra y a 22px no cabía en una tarjeta de
+     390-414px de ancho, así que se partía a la mitad. Con 17px cabe entera
+     en ese rango; `break-word` se deja como red de seguridad para anchos
+     aún menores, no como mecanismo principal. */
+  font-size: clamp(15px, 4.2vw, 36px);
   letter-spacing: 0.06em;
   margin: 0;
   color: var(--cyan);
   text-shadow: 0 0 12px rgba(0, 245, 255, 0.4);
+  overflow-wrap: break-word;
 }
 .contact-sub {
   color: var(--ink-dim);
